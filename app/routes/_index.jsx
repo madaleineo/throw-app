@@ -1,3 +1,6 @@
+import { Link } from '@remix-run/react'
+import logo from '../../public/throw.png'
+
 export const meta = () => {
   return [
     { title: 'Throw Art Studios' },
@@ -7,33 +10,14 @@ export const meta = () => {
 
 export default function Index () {
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', lineHeight: '1.8' }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target='_blank'
-            href='https://remix.run/tutorials/blog'
-            rel='noreferrer'
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target='_blank'
-            href='https://remix.run/tutorials/jokes'
-            rel='noreferrer'
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target='_blank' href='https://remix.run/docs' rel='noreferrer'>
-            Remix Docs
-          </a>
-        </li>
-      </ul>
+    <div className='mx-auto mt-16 max-w-7xl text-center'>
+      <img src={logo} className='px-52 sm:px-60 md:px-72 lg:px-96' />
+      <Link
+        to='book-ur-experience'
+        className='bg-deep-green rounded px-4 py-2 text-white text-xl hover:bg-hover-green'
+      >
+        Book Now!
+      </Link>
     </div>
   )
 }

@@ -5,7 +5,8 @@ export default {
     extend: {
       colors: {
         'burnt-orange': '#DDC3AA',
-        'deep-green': '#868866'
+        'deep-green': '#868866',
+        'hover-green': '#92956f'
       }
     }
   },
