@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "user" ALTER COLUMN "account_open" SET DEFAULT CURRENT_TIMESTAMP;

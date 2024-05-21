@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model status {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(50)
+  pot  pot[]
+}
+
+model session {
+  id         Int      @id @default(autoincrement())
+  token      String   @db.VarChar(100)
+  created_at DateTime @db.Date
+  user_id    Int
+  user       user     @relation(fields: [user_id], references: [id])
+}
+
+model user_role {
+  id    Int    @id @default(autoincrement())
+  name  String @db.VarChar(50)
+  users user[]
+}
+
+model cust_aq {
+  id      Int       @id @default(autoincrement())
+  type    String    @db.VarChar(50)
+  booking booking[]
+}
+
+model booking_type {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(150)
+  price       Float
+  description String?   @db.VarChar(300)
+  bookings    booking[]
+}
+
+model booking {
+  id              Int           @id @default(autoincrement())
+  name            String        @db.VarChar(100)
+  email           String        @db.VarChar(100)
+  phone           String        @db.VarChar(12)
+  num_party       Int
+  type_id         Int
+  city            String?       @db.VarChar(50)
+  cust_aq_id      Int?
+  delivery        String        @db.VarChar(30)
+  state           String?       @db.VarChar(2)
+  street_address1 String?       @db.VarChar(75)
+  street_address2 String?       @db.VarChar(75)
+  user_id         Int?          @default(0)
+  zipcode         String?       @db.VarChar(10)
+  date_time       DateTime      @db.Date
+  cust_aq         cust_aq?      @relation(fields: [cust_aq_id], references: [id])
+  type            booking_type  @relation(fields: [type_id], references: [id])
+  pot_booking     pot_booking[]
+}
+
+model pot {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(100)
+  description String?       @db.VarChar(150)
+  status_id   Int           @default(1)
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @default(now()) @updatedAt
+  status      status        @relation(fields: [status_id], references: [id])
+  pot_booking pot_booking[]
+}
+
+model pot_booking {
+  booking_id Int
+  pot_id     Int
+  booking    booking @relation(fields: [booking_id], references: [id], onDelete: NoAction)
+  pot        pot     @relation(fields: [pot_id], references: [id], onDelete: NoAction)
+
+  @@id([booking_id, pot_id], map: "pot_booking_id")
+}
+
+model user {
+  id              Int       @id @default(autoincrement())
+  username        String    @unique
+  password        String    @db.VarChar(100)
+  first_name       String    @db.VarChar(50)
+  last_name       String    @db.VarChar(50)
+  email           String    @unique
+  phone           String    @unique
+  birthday        DateTime  @db.Date
+  num_visits      Int       @default(0)
+  city            String    @db.VarChar(50)
+  state           String    @db.VarChar(2)
+  zipcode         String    @db.VarChar(10)
+  role_id         Int       @default(5)
+  gender          String    @db.VarChar(50)
+  student_job     String?   @db.VarChar(50)
+  booking_id      Int?
+  account_open    DateTime  @default(now()) @db.Date
+  recent_visit    DateTime? @db.Date
+  street_address1 String    @db.VarChar(75)
+  street_address2 String?   @db.VarChar(75)
+  sessions        session[]
+  role            user_role @relation(fields: [role_id], references: [id])
+}
