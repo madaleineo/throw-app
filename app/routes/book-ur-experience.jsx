@@ -2,33 +2,68 @@ import { json, useLoaderData, Form } from '@remix-run/react'
 import { db } from '../utils/db.server'
 
 //this is my server
-export async function loader () {
-  const types = await db.booking_type.findMany()
+export async function loader() {
+  const clay = await db.product.findMany({
+    where: {
+      category: "clay"
+    }
+  })
+  const bookings = await db.product.findMany({
+    where: {
+      category: "booking"
+    }
+  })
   const cust_aq = await db.cust_aq.findMany()
   return json({
     appointmentTimes: [
-      { id: 'sat', label: 'Saturday at 1:00' },
-      { id: 'mon', label: 'Monday at 12:00' },
-      { id: 'fri', label: 'Friday at 9:00' },
-      { id: 'tue', label: 'Tuesday at 6:00' }
+      { id: 'mon6', label: 'Monday @ 6:00 PM', productId: 8 },
+      { id: 'mon8', label: 'Monday @ 8:00 PM', productId: 8 },
+      { id: 'tue6', label: 'Tuesday @ 6:00 PM', productId: 8 },
+      { id: 'tue8', label: 'Tuesday @ 8:00 PM', productId: 8 },
+      { id: 'wed6', label: 'Wednesday @ 6:00 PM', productId: 8 },
+      { id: 'wed8', label: 'Wednesday @ 8:00 PM', productId: 8 },
+      { id: 'thurs6', label: 'Thursday @ 6:00 PM', productId: 8 },
+      { id: 'thurs8', label: 'Thursday @ 8:00 PM', productId: 8 },
+      { id: 'fri4', label: 'Friday @ 4:00 PM', productId: 8 },
+      { id: 'fri6', label: 'Friday @ 6:00 PM', productId: 8 },
+      { id: 'fri8', label: 'Friday @ 8:00 PM', productId: 8 },
+      { id: 'sat10', label: 'Saturday @ 10:00 AM', productId: 8 },
+      { id: 'sat12', label: 'Saturday @ 12:00 PM', productId: 8 },
+      { id: 'sat2', label: 'Saturday @ 2:00 PM', productId: 8 },
+      { id: 'sat4', label: 'Saturday @ 4:00 PM', productId: 8 },
+      { id: 'sat6', label: 'Saturday @ 6:00 PM', productId: 8 },
+      { id: 'sat8', label: 'Saturday @ 8:00 PM', productId: 8 },
     ],
     delivery: [
-      { id: 'pickup', label: 'I will pick up my pottery.' },
-      { id: 'shipping', label: 'Please ship my pottery for a fee.' },
-      { id: 'delivery', label: 'I qualify for the delivery plan!' }
+      { id: 'pickup', label: 'Self Pickup' },
+      { id: 'shipping', label: 'Shipping (Includes Fees)' },
+      // { id: 'delivery', label: 'I qualify for the delivery plan!' }
     ],
-    types,
+    clay,
+    bookings,
     cust_aq
   })
 }
 
-export async function action ({ request }) {
+export async function action({ request }) {
   const formData = await request.formData()
-  const data = {
-    name: formData.get('name'),
+  const userData = {
+    firstName: formData.get('firstName'),
+    lastName: formData.get('lastName'),
     email: formData.get('email'),
     phone: formData.get('phone'),
-    partySize: formData.get('partySize'),
+    numWheels: formData.get('numWheels'),
+    numShared: formData.get('numShared'),
+    type: formData.get('type'),
+    time: formData.get('time')
+  }
+  const orderData = {
+    firstName: formData.get('firstName'),
+    lastName: formData.get('lastName'),
+    email: formData.get('email'),
+    phone: formData.get('phone'),
+    numWheels: formData.get('numWheels'),
+    numShared: formData.get('numShared'),
     type: formData.get('type'),
     time: formData.get('time')
   }
@@ -37,7 +72,7 @@ export async function action ({ request }) {
 }
 
 // this is what i am rendering to the page
-export default function BookUrExperience () {
+export default function BookUrExperience() {
   //get the data from the server
   // useActionData()
   const data = useLoaderData()
@@ -47,11 +82,24 @@ export default function BookUrExperience () {
       <Form method='POST' className='max-w-3xl'>
         <div className='flex flex-row justify-between p-2'>
           <label className='px-12'>
-            Name <span className='text-red-700'>*</span>
+            First Name <span className='text-red-700'>*</span>
           </label>
           <input
             type='text'
             name='firstName'
+            required
+            autoFocus
+            className='px-1 rounded p-1 min-w-72'
+          ></input>
+        </div>
+
+        <div className='flex flex-row justify-between p-2'>
+          <label className='px-12'>
+            Last Name <span className='text-red-700'>*</span>
+          </label>
+          <input
+            type='text'
+            name='lastName'
             required
             autoFocus
             className='px-1 rounded p-1 min-w-72'
@@ -84,52 +132,64 @@ export default function BookUrExperience () {
 
         <div className='flex flex-row justify-between p-2'>
           <label className='px-12'>
-            Party Size <span className='text-red-700'>*</span>
+            Book Your Class <span className='text-red-700'>*</span>
+          </label>
+          <select name='type' required className='px-1 rounded p-1 min-w-72'>
+            <option value={""}>-- Select Your Class --</option>
+            {data.bookings.map(types => (
+              <option key={types.id} value={types.id}>
+                {types.name} - ${types.price}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className='flex flex-row justify-between p-2'>
+          <label className='px-12'>
+            Number of Pottery Wheels <span className='text-red-700'>*</span>
           </label>
           <select
-            name='partySize'
+            name='numWheels'
             required
             className='px-1 rounded p-1 min-w-72'
           >
-            <option value={0}>0</option>
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-            <option value={3}>3</option>
-            <option value={4}>4</option>
-            <option value={5}>5</option>
-            <option value={6}>6</option>
-            <option value={7}>7</option>
-            <option value={8}>8</option>
-            <option value={9}>9</option>
-            <option value={10}>10</option>
+            <option value={0}>0 Wheels</option>
+            <option value={1}>1 Wheel</option>
+            <option value={2}>2 Wheels</option>
+            <option value={3}>3 Wheels</option>
+            <option value={4}>4 Wheels</option>
+            <option value={5}>5 Wheels</option>
+            <option value={6}>6 Wheels</option>
+            <option value={7}>7 Wheels</option>
+            <option value={8}>8 Wheels</option>
+            <option value={9}>9 Wheels</option>
+            <option value={10}>10 Wheels</option>
           </select>
         </div>
 
         <div className='flex flex-row justify-between p-2'>
           <label className='px-12'>
-            Booking Type <span className='text-red-700'>*</span>
+            Number of Shared Wheels <span className='text-red-700'>*</span>
           </label>
-          <select name='type' required className='px-1 rounded p-1 min-w-72'>
-            {data.types.map(types => (
-              <option key={types.id} value={types.id}>
-                {types.name} - ${types.price}
-              </option>
-            ))}
+          <select
+            name='numShared'
+            required
+            className='px-1 rounded p-1 min-w-72'
+          >
+            <option value={0}>0 Wheels</option>
+            <option value={1}>1 Wheel</option>
+            <option value={2}>2 Wheels</option>
+            <option value={3}>3 Wheels</option>
+            <option value={4}>4 Wheels</option>
+            <option value={5}>5 Wheels</option>
+            <option value={6}>6 Wheels</option>
+            <option value={7}>7 Wheels</option>
+            <option value={8}>8 Wheels</option>
+            <option value={9}>9 Wheels</option>
+            <option value={10}>10 Wheels</option>
           </select>
         </div>
 
-        <div className='flex flex-row justify-between p-2'>
-          <label className='px-12'>
-            Clay Type <span className='text-red-700'>*</span>
-          </label>
-          <select name='type' required className='px-1 rounded p-1 min-w-72'>
-            {data.types.map(types => (
-              <option key={types.id} value={types.id}>
-                {types.name} - ${types.price}
-              </option>
-            ))}
-          </select>
-        </div>
 
         <div className='flex flex-row justify-between p-2'>
           <label className='px-12'>
@@ -146,6 +206,20 @@ export default function BookUrExperience () {
 
         <div className='flex flex-row justify-between p-2'>
           <label className='px-12'>
+            Clay Type <span className='text-red-700'>*</span>
+          </label>
+          <select name='type' required className='px-1 rounded p-1 min-w-72'>
+            <option value={""}>-- Select Your Clay Type --</option>
+            {data.clay.map(types => (
+              <option key={types.id} value={types.id}>
+                {types.name} - ${types.price}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className='flex flex-row justify-between p-2'>
+          <label className='px-12'>
             Pottery Pick Up Plan <span className='text-red-700'>*</span>
           </label>
           <select
@@ -153,6 +227,8 @@ export default function BookUrExperience () {
             required
             className='px-1 rounded p-1 min-w-72'
           >
+            <option value={""}>-- Select Your Pick Up Plan --</option>
+
             {data.delivery.map(delivery => (
               <option key={delivery.id} value={delivery.id}>
                 {delivery.label}
@@ -163,7 +239,7 @@ export default function BookUrExperience () {
 
         <div className='flex flex-row justify-between p-2'>
           <label className='px-12'>
-            Street Address <span className='text-red-700'>*</span>
+            Street Address 1 <span className='text-red-700'>*</span>
           </label>
           <input
             type='text'
@@ -183,7 +259,6 @@ export default function BookUrExperience () {
         </div>
 
         <div
-          className='flex flex-row justify-between p-2'
           className='flex flex-row justify-between p-2'
         >
           <label className='px-12'>
@@ -274,6 +349,7 @@ export default function BookUrExperience () {
             How did you hear about us? <span className='text-red-700'>*</span>
           </label>
           <select name='cust_aq' required className='px-1 rounded p-1 min-w-72'>
+            <option value={""}>-- Select --</option>
             {data.cust_aq.map(cust => (
               <option key={cust.id} value={cust.id}>
                 {cust.type}

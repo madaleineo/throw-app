@@ -28,81 +28,105 @@ model user_role {
 }
 
 model cust_aq {
-  id      Int       @id @default(autoincrement())
-  type    String    @db.VarChar(50)
-  booking booking[]
+  id    Int    @id @default(autoincrement())
+  type  String @db.VarChar(50)
+  users user[]
 }
 
-model booking_type {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(150)
-  price       Float
-  description String?   @db.VarChar(300)
-  bookings    booking[]
+model product {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(150)
+  price        Float
+  description  String?        @db.VarChar(300)
+  category     String         @db.VarChar(50)
+  order_detail order_detail[]
+  availability availability[]
 }
 
-model booking {
-  id              Int           @id @default(autoincrement())
-  name            String        @db.VarChar(100)
-  email           String        @db.VarChar(100)
-  phone           String        @db.VarChar(12)
-  num_party       Int
-  type_id         Int
-  city            String?       @db.VarChar(50)
-  cust_aq_id      Int?
-  delivery        String        @db.VarChar(30)
-  state           String?       @db.VarChar(2)
-  street_address1 String?       @db.VarChar(75)
-  street_address2 String?       @db.VarChar(75)
-  user_id         Int?          @default(0)
-  zipcode         String?       @db.VarChar(10)
-  date_time       DateTime      @db.Date
-  cust_aq         cust_aq?      @relation(fields: [cust_aq_id], references: [id])
-  type            booking_type  @relation(fields: [type_id], references: [id])
-  pot_booking     pot_booking[]
+model order {
+  id                Int      @id @default(autoincrement())
+  date_time         DateTime @db.Date
+  user_id           Int?     @default(0)
+  booking_date      DateTime
+  booking_time      DateTime
+  num_shared_wheels Int
+  delivery          String   @db.VarChar(30)
+
+  pot_order    pot_order[]
+  order_detail order_detail[]
 }
 
 model pot {
-  id          Int           @id @default(autoincrement())
-  name        String        @db.VarChar(100)
-  description String?       @db.VarChar(150)
-  status_id   Int           @default(1)
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @default(now()) @updatedAt
-  status      status        @relation(fields: [status_id], references: [id])
-  pot_booking pot_booking[]
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?  @db.VarChar(150)
+  status_id   Int      @default(1)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+
+  status    status      @relation(fields: [status_id], references: [id])
+  pot_order pot_order[]
 }
 
-model pot_booking {
-  booking_id Int
-  pot_id     Int
-  booking    booking @relation(fields: [booking_id], references: [id], onDelete: NoAction)
-  pot        pot     @relation(fields: [pot_id], references: [id], onDelete: NoAction)
+model pot_order {
+  order_id Int
+  pot_id   Int
+  order    order @relation(fields: [order_id], references: [id], onDelete: NoAction)
+  pot      pot   @relation(fields: [pot_id], references: [id], onDelete: NoAction)
 
-  @@id([booking_id, pot_id], map: "pot_booking_id")
+  @@id([order_id, pot_id], map: "pot_order_id")
+}
+
+model order_detail {
+  order_id   Int
+  product_id Int
+  qty        Int
+  order      order   @relation(fields: [order_id], references: [id], onDelete: NoAction)
+  product    product @relation(fields: [product_id], references: [id], onDelete: NoAction)
+
+  @@id([order_id, product_id], map: "product_order_id")
 }
 
 model user {
   id              Int       @id @default(autoincrement())
-  username        String    @unique
-  password        String    @db.VarChar(100)
-  first_name       String    @db.VarChar(50)
+  username        String?   @unique
+  password        String?   @db.VarChar(100)
+  first_name      String    @db.VarChar(50)
   last_name       String    @db.VarChar(50)
   email           String    @unique
   phone           String    @unique
   birthday        DateTime  @db.Date
   num_visits      Int       @default(0)
-  city            String    @db.VarChar(50)
-  state           String    @db.VarChar(2)
-  zipcode         String    @db.VarChar(10)
+  city            String?   @db.VarChar(50)
+  state           String?   @db.VarChar(2)
+  zipcode         String?   @db.VarChar(10)
   role_id         Int       @default(5)
   gender          String    @db.VarChar(50)
   student_job     String?   @db.VarChar(50)
-  booking_id      Int?
+  cust_aq_id      Int
   account_open    DateTime  @default(now()) @db.Date
   recent_visit    DateTime? @db.Date
-  street_address1 String    @db.VarChar(75)
+  street_address1 String?   @db.VarChar(75)
   street_address2 String?   @db.VarChar(75)
   sessions        session[]
   role            user_role @relation(fields: [role_id], references: [id])
+  cust_aq         cust_aq   @relation(fields: [cust_aq_id], references: [id])
+}
+
+model availability {
+  id         String     @id
+  day        String     @db.VarChar(10)
+  time       DateTime   @db.Date
+  product_id Int
+  num_spots  Int        @default(10)
+  products   product    @relation(fields: [product_id], references: [id])
+  schedules  schedule[]
+}
+
+model schedule {
+  id                   Int          @id @default(autoincrement())
+  date_time            DateTime     @db.Date
+  availability_id      String
+  num_wheels_available Int          @default(10)
+  availability         availability @relation(fields: [availability_id], references: [id])
 }
