@@ -8,12 +8,14 @@ import {
 } from '@remix-run/react'
 
 import stylesheet from './tailwind.css?url'
+import './index.css'
 
-export function links () {
+
+export function links() {
   return [{ rel: 'stylesheet', href: stylesheet }]
 }
 
-export function Layout ({ children }) {
+export function Layout({ children }) {
   return (
     <html lang='en'>
       <head>
@@ -31,26 +33,25 @@ export function Layout ({ children }) {
   )
 }
 
-export default function App () {
+export default function App() {
   return <Outlet />
 }
 
-export function ErrorBoundary () {
-  const error = useRouteError()
-  console.error(error)
-  return (
-    <html>
-      <head>
-        <title>Oh no!</title>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        Oh no! Nothing is working. Its so sad. Cry. A river. Build a Bridge. You
-        know the rest.
-        {/* add the UI you want your users to see */}
-        <Scripts />
-      </body>
-    </html>
-  )
-}
+// export function ErrorBoundary() {
+//   const error = useRouteError()
+//   console.error(error)
+//   return (
+//     <html>
+//       <head>
+//         <title>Server Problem</title>
+//         <Meta />
+//         <Links />
+//       </head>
+//       <body>
+//         We're sorry. We are experiencing technical difficulties. Please check back in a few hours.
+//         {/* add the UI you want your users to see */}
+//         <Scripts />
+//       </body>
+//     </html>
+//   )
+// }

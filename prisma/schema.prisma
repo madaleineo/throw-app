@@ -39,6 +39,7 @@ model product {
   price        Float
   description  String?        @db.VarChar(300)
   category     String         @db.VarChar(50)
+  duration     String?        @db.VarChar(50)
   order_detail order_detail[]
   availability availability[]
 }
@@ -47,11 +48,11 @@ model order {
   id                Int      @id @default(autoincrement())
   date_time         DateTime @db.Date
   user_id           Int?     @default(0)
-  booking_date      DateTime
-  booking_time      DateTime
+  schedule_id       Int
   num_shared_wheels Int
   delivery          String   @db.VarChar(30)
 
+  schedule     schedule       @relation(fields: [schedule_id], references: [id])
   pot_order    pot_order[]
   order_detail order_detail[]
 }
@@ -116,7 +117,7 @@ model user {
 model availability {
   id         String     @id
   day        String     @db.VarChar(10)
-  time       DateTime   @db.Date
+  time       DateTime   @db.Time()
   product_id Int
   num_spots  Int        @default(10)
   products   product    @relation(fields: [product_id], references: [id])
@@ -129,4 +130,5 @@ model schedule {
   availability_id      String
   num_wheels_available Int          @default(10)
   availability         availability @relation(fields: [availability_id], references: [id])
+  orders               order[]
 }

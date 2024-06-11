@@ -9,3 +9,271 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+body {
+  background-color: #DDC3AA;
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100vh;
+  max-height: 100vh;
+  width: 100vw;
+  min-width: 320px;
+  /* max-width: 428px; */
+  border: none;
+  position: relative;
+  /* overflow: hidden; */
+}
+
+h1 {
+  font-family: 'League Spartan', sans-serif;
+  font-size: 2.7em;
+  line-height: 1.1;
+  font-weight: bold;
+}
+
+a {
+  font-weight: 500;
+  color: #ffffff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #ffffff;
+}
+.a-list {
+  color: #000000;
+}
+
+.sign-in-button-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #868866;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  width: calc(100vw - 80px);
+  max-width: 270px;
+  min-width: 130px;
+  height: 42px;
+  color: #fff;
+}
+
+.sign-in-button-link:hover {
+  color: #ffffff;
+  background-color: #92956f;
+
+  cursor: pointer;
+}
+
+.button-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #868866;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  width: 216px;
+  height: 52px;
+  color: white;
+}
+
+.button-link:hover {
+  border-color: #92956f;
+  cursor: pointer;
+}
+
+button {
+  border-radius: 6px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #868866;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  width: 216px;
+  height: 52px;
+}
+
+button:hover {
+  border-color: #92956f;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+.button-secondary {
+  background-color: white;
+  color: #868866;
+  font-weight: bold;
+}
+
+input {
+  width: calc(100vw - 80px);
+  max-width: 270px;
+  min-width: 130px;
+  height: 42px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 18px;
+  padding: 0 8px;
+}
+
+.logo {
+  height: 6em;
+  padding: 0.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #92956f);
+}
+
+/*cards for viewing info about a medication*/
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  width: calc(100vw - 60px);
+  max-width: 366px;
+  min-width: 130px;
+  border-radius: 6px;
+  background-color: white;
+}
+
+.card-disabled {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  width: calc(100vw - 60px);
+  max-width: 366px;
+  min-width: 130px;
+  border-radius: 6px;
+  background-color: #d7d7d7;
+}
+/*Card for Access options page*/
+.card-access {
+  display: flex;
+  flex-direction: column; /* Align items in a column */
+  align-items: center; /* Center items horizontally */
+  justify-content: center; /* Center text */
+  height: 200px;
+  width: 378px;
+  border-radius: 6px;
+  background-color: white;
+  padding-top: 1em;
+}
+/*QR-Code Access Page*/
+.card-qr {
+  display: flex;
+  flex-direction: column; /* Align items in a column */
+  align-items: center; /* Center items horizontally */
+  text-align: center; /* Center text */
+  height: 350px;
+  width: 378px;
+  border-radius: 6px;
+  background-color: white;
+}
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Ensures the container takes the full width */
+}
+
+.card-text {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 500;
+  color: black;
+}
+
+.logo-small {
+  height: 3em;
+  padding: 4px 4px 8px 4px;
+}
+
+.logo-extra-small {
+  height: 2em;
+  padding: 2px 2px 4px 2px;
+}
+
+.p-info {
+  padding: 1px 0;
+  font-family: 'League Spartan', sans-serif;
+  font-size: 1.2em;
+  font-weight: 'bold';
+  color: #000000;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.h2-light {
+  padding: 1px 0;
+  font-family: 'League Spartan', sans-serif;
+  font-size: 1.2em;
+  /*font-weight: 'regular';*/
+  color: #8b9c96;
+  text-align: left;
+}
+
+.align-left {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.align-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.align-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+label {
+  font-size: 1em;
+  font-family: 'DM Sans', sans-serif;
+}
+
+body:has(.Center-Body) {
+  align-items: center;
+}
+body:has(.Top-Body) {
+  align-items: flex-start;
+}
+
+/* Media Queries for mobile screens */
+@media (max-width: 426px) {
+  .qr-reader {
+    width: 100%;
+  }
+}
+
+.cust-p {
+  padding-top: 30%;
+}
+.cust-p2 {
+  padding-top: 24%;
+}
