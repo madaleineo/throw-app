@@ -244,7 +244,7 @@ export default function BookUrExperience() {
           </div>
         </div>
 
-        <div className='border'>
+        <div className='bg-white rounded-lg py-4 px-6'>
           <div className='flex flex-row justify-between p-2'>
             <label className='pr-4'>
               First Name <span className='text-red-700'>*</span>
@@ -309,9 +309,8 @@ export default function BookUrExperience() {
             </select>
           </div>
         </div>
-        <div className='border'>
 
-
+        <div className='bg-white rounded-lg py-4 px-6'>
           <div className='flex flex-row justify-between p-2'>
             <label className='pr-4'>
               Street Address 1 <span className='text-red-700'>*</span>

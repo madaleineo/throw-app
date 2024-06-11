@@ -3,14 +3,14 @@ import { ensureAdmin } from '../utils/role-check.server'
 import { db } from '../utils/db.server'
 import { LoaderFunctionArgs } from '@remix-run/node'
 
-export async function loader ({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   await ensureAdmin(request)
   //bring in items from
   const pots = await db.pot.findMany()
   return json({ pots })
 }
 
-export default function Pottery () {
+export default function Pottery() {
   const data = useLoaderData<typeof loader>()
 
   return (
@@ -21,7 +21,7 @@ export default function Pottery () {
           <li className=''>
             <Link
               to='new'
-              className='bg-blue-200 block rounded px-3 py-1 hover:bg-blue-300'
+              className='block rounded px-3 py-1 bg-deep-green hover:bg-hover-green hover:cursor-pointer'
             >
               Add New Pot
             </Link>
@@ -38,6 +38,6 @@ export default function Pottery () {
   )
 }
 
-export function ErrorBoundary () {
+export function ErrorBoundary() {
   return <div>You ain't no admin!</div>
 }

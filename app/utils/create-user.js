@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt-node')
-const { PrismaClient } = require('@prisma/client')
+import bcrypt from 'bcrypt-node';
+import { PrismaClient } from '@prisma/client';
 
 const [, , role, username, password, roleId] = process.argv
 const VALID_ROLES = ['global', 'owner', 'employee', 'member', 'guest', 'regular_customer']

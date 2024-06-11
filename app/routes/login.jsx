@@ -50,7 +50,7 @@ export default function Login() {
         )}
         {/* <a className='align-right p-2 text-deep-green hover:text-hover-green hover:cursor-pointer'>Forgot Password</a> */}
         <div className='align-left px-2 py-6'>
-          <button className='sign-in-button-link'>Sign In</button>
+          <Link to='/pottery' className='sign-in-button-link'>Sign In</Link>
         </div>
         <Link to='/account/new' className='align-center p-2 text-deep-green hover:text-hover-green hover:cursor-pointer' >Create New Account</Link>
       </form>
