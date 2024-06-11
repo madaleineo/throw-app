@@ -51,6 +51,7 @@ model order {
   schedule_id       Int
   num_shared_wheels Int
   delivery          String   @db.VarChar(30)
+  name              String   @default("") @db.VarChar(30)
 
   schedule     schedule       @relation(fields: [schedule_id], references: [id])
   pot_order    pot_order[]
@@ -61,6 +62,7 @@ model pot {
   id          Int      @id @default(autoincrement())
   name        String   @db.VarChar(100)
   description String?  @db.VarChar(150)
+  glaze       Int      @default(1)
   status_id   Int      @default(1)
   created_at  DateTime @default(now())
   updated_at  DateTime @default(now()) @updatedAt
@@ -126,7 +128,8 @@ model availability {
 
 model schedule {
   id                   Int          @id @default(autoincrement())
-  date_time            DateTime     @db.Date
+  class_date           DateTime     @default(now()) @db.Date
+  class_time           DateTime     @default(now()) @db.Time
   availability_id      String
   num_wheels_available Int          @default(10)
   availability         availability @relation(fields: [availability_id], references: [id])

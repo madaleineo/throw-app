@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "pot" ADD COLUMN     "glaze" INTEGER NOT NULL DEFAULT 1;
