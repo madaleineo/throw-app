@@ -1,6 +1,9 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { json, useLoaderData, Form } from '@remix-run/react'
 import { db } from '../utils/db.server'
 import { useState } from 'react'
+import { parseISO, format } from 'date-fns';
+
 
 
 //this is my server
@@ -13,6 +16,9 @@ export async function loader() {
   const bookings = await db.product.findMany({
     where: {
       category: "booking"
+    },
+    orderBy: {
+      price: 'asc'
     }
   })
   const schedules = await db.schedule.findMany()
@@ -57,36 +63,6 @@ export async function action({ request }) {
   return null
 }
 
-function formatDateTime(dateTimeString) {
-  const date = new Date(dateTimeString);
-
-  // Array of weekdays
-  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const weekday = weekdays[date.getDay()];
-
-  // Array of months
-  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const month = months[date.getMonth()];
-
-  // Get day of the month
-  const day = date.getDate();
-
-  // Get hours and minutes
-  let hours = date.getHours();
-  const minutes = ('0' + date.getMinutes()).slice(-2);
-
-  // AM or PM
-  const amPM = hours >= 12 ? 'PM' : 'AM';
-
-  // Convert hours to 12-hour format
-  hours = hours % 12 || 12;
-
-  // Construct formatted date and time string
-  const formattedDateTime = `${weekday}, ${month} ${day} @ ${hours}:${minutes} ${amPM}`;
-
-  return formattedDateTime;
-}
-
 function nullToEmpty(input) {
   return input === null ? '' : input
 }
@@ -97,10 +73,11 @@ export default function BookUrExperience() {
   // useActionData()
   const [quantity, setQuantity] = useState(0);
   const [potteryClass, setPotteryClass] = useState(null);
+  const [clayType, setClayType] = useState(null);
   const data = useLoaderData()
   return (
     <div className='mx-auto mt-16 max-w-7xl flex flex-col justify-center'>
-      <h1 className='text-2xl p-4 align-center'>Book Your Experience!</h1>
+      <h1 className='text-2xl p-4 align-center'>Book Your Pottery Experience!</h1>
       <Form method='POST' className='max-w-3xl'>
 
         <div className='bg-white rounded-lg py-4 px-6'>
@@ -121,7 +98,9 @@ export default function BookUrExperience() {
                 document.getElementById('class-name').innerText = selectedClass.name;
                 document.getElementById('class-duration').innerText = selectedClass.duration;
                 document.getElementById('class-description').innerText =
-                  `${selectedClass.description} Bookings are based on the number of wheels you would like to reserve. If there are members in your group who are NOT making a pot (or if you are 'sharing' a wheel), please DO NOT include them in your booking. For example, if you and your date are sharing a wheel then only book for 1 wheel. So excited to have y'all in the studio!`;
+                  `${selectedClass.description}`;
+                document.getElementById('class-bookings').innerText =
+                  `Bookings are based on the number of wheels you would like to reserve. If there are members in your group who are NOT making a pot (or if you are 'sharing' a wheel), please DO NOT include them in your booking. For example, if you and your date are sharing a wheel then only book for 1 wheel. So excited to have y'all in the studio!`;
                 document.getElementById('class-price').innerText =
                   `$${selectedClass.price}/wheel + tax`;
                 document.getElementById('subtotal').innerText =
@@ -131,7 +110,7 @@ export default function BookUrExperience() {
                 setPotteryClass(selectedClass);
               }}
             >
-              <option disabled value=''>
+              <option value=''>
                 -- Select Your Class --
               </option>
               {data.bookings.map((types) => (
@@ -146,6 +125,7 @@ export default function BookUrExperience() {
             <p className="font-bold" id="class-name"></p>
             <p id="class-duration"></p>
             <p className="py-2" id="class-description"></p>
+            <p className="py-2" id="class-bookings"></p>
             <p className="py-2" id="class-price"></p>
           </div>
 
@@ -174,8 +154,8 @@ export default function BookUrExperience() {
             </select>
           </div>
 
-          <div className="p-4">
-            <p className="py-2" id="subtotal"></p>
+          <div className="pb-4 pl-2">
+            <p className="py-1 text-gray-400" id="">Select the quantity of wheels you would like to reserve. <span className="float-right" id="subtotal"></span></p>
           </div>
 
           <div className='flex flex-row justify-between p-2'>
@@ -192,21 +172,22 @@ export default function BookUrExperience() {
               ))}
             </select>
           </div>
-
-
-
-
+          <div className="pb-4 pl-2">
+            <p className="py-1 text-gray-400" id="">Select the quantity of wheels you plan to share.</p>
+          </div>
 
           <div className='flex flex-row justify-between p-2'>
             <label className='pr-4'>
               Find a Time <span className='text-red-700'>*</span>
             </label>
             <select name='time' required className='px-1 rounded p-1 min-w-72 border border-gray-300'>
-              {data.schedules.map(time => (
-                <option key={time.id} value={time.id}>
-                  formatDateTime({time.date_time}) - {time.num_wheels_available} spots left!
-                </option>
-              ))}
+              {data.schedules.map(sched => {
+                const formattedDate = format(parseISO(sched.class_date), 'MMMM do');
+                const formattedTime = format(parseISO(sched.class_time), 'h:mm a');
+                return (
+                  <option key={sched.id} value={sched.id}>{formattedDate} @ {formattedTime} - {sched.num_wheels_available} spots left!</option>
+                );
+              })}
             </select>
           </div>
 
@@ -214,14 +195,28 @@ export default function BookUrExperience() {
             <label className='pr-4'>
               Clay Type <span className='text-red-700'>*</span>
             </label>
-            <select name='type' required className='px-1 rounded p-1 min-w-72 border border-gray-300'>
-              <option disabled value={""}>-- Select Your Clay Type --</option>
+            <select name='type' required className='px-1 rounded p-1 min-w-72 border border-gray-300' onChange={(e) => {
+              const clayId = parseInt(e.target.value);
+              const clayType = data.clay.find((cls) => cls.id === clayId);
+
+              // Update the <p> tags with the selected class details
+              document.getElementById('subtotal2').innerText =
+                `$${(clayType.price + potteryClass.price) * quantity} subtotal`;
+
+              setClayType(clayType);
+
+            }}>
+              <option value={""}>-- Select Your Clay Type --</option>
               {data.clay.map(types => (
                 <option key={types.id} value={types.id}>
                   {types.name} - ${types.price}
                 </option>
               ))}
             </select>
+          </div>
+
+          <div className="pb-4 pl-2">
+            <p className="py-1 text-gray-400" id="">Select the type of clay you plan to use. <span className="float-right" id="subtotal2"></span></p>
           </div>
 
           <div className='flex flex-row justify-between p-2'>
@@ -233,7 +228,7 @@ export default function BookUrExperience() {
               required
               className='px-1 rounded p-1 min-w-72 border border-gray-300'
             >
-              <option disabled value={""}>-- Select Your Pick Up Plan --</option>
+              <option value={""}>-- Select Your Pick Up Plan --</option>
 
               {data.delivery.map(delivery => (
                 <option key={delivery.id} value={delivery.id}>
@@ -244,7 +239,7 @@ export default function BookUrExperience() {
           </div>
         </div>
 
-        <div className='bg-white rounded-lg py-4 px-6'>
+        <div className='bg-white rounded-lg py-4 px-6 my-2'>
           <div className='flex flex-row justify-between p-2'>
             <label className='pr-4'>
               First Name <span className='text-red-700'>*</span>
@@ -300,7 +295,7 @@ export default function BookUrExperience() {
               How did you hear about us? <span className='text-red-700'>*</span>
             </label>
             <select name='cust_aq' required className='px-1 rounded p-1 min-w-72 border border-gray-300'>
-              <option disabled value="">-- Select --</option>
+              <option value="">-- Select --</option>
               {data.cust_aq.map(cust => (
                 <option key={cust.id} value={cust.id}>
                   {cust.type}
@@ -422,7 +417,7 @@ export default function BookUrExperience() {
 
         <button
           type='submit'
-          className='bg-deep-green rounded px-4 py-2 text-white text-xl hover:bg-hover-green'
+          className='bg-deep-green rounded px-4 py-2 text-white text-xl hover:bg-hover-green my-2'
         >
           Checkout
         </button>

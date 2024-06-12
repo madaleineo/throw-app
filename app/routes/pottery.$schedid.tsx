@@ -25,8 +25,8 @@ export default function Group() {
       <div>
         <ul>
           {data.orders.map(order => (
-            <li className='font-bold' key={order.id}>
-              <Link to={`${order.id}`}>
+            <li className='p-2 bg-white rounded my-2 hover:bg-hover-green hover:cursor-pointer' key={order.id}>
+              <Link className='text-black' to={`${order.id}`}>
                 {order.name} Group
               </Link>
             </li>

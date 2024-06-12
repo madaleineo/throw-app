@@ -28,21 +28,16 @@ export default function Pottery() {
       <div className='flex flex-row'>
 
         <div>
-          <ul className='p-4'>
+          <ul className=''>
             {data.schedules.map(sched => {
               const formattedDate = format(parseISO(sched.class_date), 'MMMM do');
               const formattedTime = format(parseISO(sched.class_time), 'h:mm a');
               return (
-                <li key={sched.id}>
-                  <Link to={`${sched.id}`}>{formattedDate} @ {formattedTime}</Link>
+                <li className='p-2 bg-white rounded my-2 hover:bg-hover-green hover:cursor-pointer' key={sched.id}>
+                  <Link className='text-black' to={`${sched.id}`}>{formattedDate} @ {formattedTime}</Link>
                 </li>
               );
             })}
-            {/* {data.schedules.map(sched => (
-            <li key={sched.id}>
-            <Link to={`${sched.id}`}>{sched.date_time}</Link>
-            </li>
-          ))} */}
           </ul>
         </div>
         <div>
@@ -55,5 +50,5 @@ export default function Pottery() {
 }
 
 export function ErrorBoundary() {
-  return <div>You ain't no admin!</div>
+  return <div>You aint no admin!</div>
 }
