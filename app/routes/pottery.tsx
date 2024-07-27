@@ -6,12 +6,11 @@ import { parseISO, format } from 'date-fns';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await ensureAdmin(request)
-  //bring in items from
+  //bring in items from 156
   const pots = await db.pot.findMany()
   const schedules = await db.schedule.findMany({
     orderBy: [
       { class_date: 'asc' },  // Order by class_date ascending
-      { class_time: 'asc' }   // Order by class_time ascending
     ]
   })
   return json({ pots, schedules })
@@ -30,11 +29,10 @@ export default function Pottery() {
         <div>
           <ul className=''>
             {data.schedules.map(sched => {
-              const formattedDate = format(parseISO(sched.class_date), 'MMMM do');
-              const formattedTime = format(parseISO(sched.class_time), 'h:mm a');
+              const formattedDate = format(parseISO(sched.class_date), 'MMMM do @ h:mm a');
               return (
                 <li className='p-2 bg-white rounded my-2 hover:bg-hover-green hover:cursor-pointer' key={sched.id}>
-                  <Link className='text-black' to={`${sched.id}`}>{formattedDate} @ {formattedTime}</Link>
+                  <Link className='text-black' to={`${sched.id}`}>{formattedDate}</Link>
                 </li>
               );
             })}

@@ -6,7 +6,7 @@ import { db } from '../utils/db.server'
 export async function loader({ params, request }: LoaderFunctionArgs) {
   await ensureAdmin(request)
   const orderid = params.orderid as string
-  const pot_orders = await db.pot_order.findMany({
+  const pot_orders = await db.potOrder.findMany({
     where: { order_id: +orderid },
     include: {
       pot: true,

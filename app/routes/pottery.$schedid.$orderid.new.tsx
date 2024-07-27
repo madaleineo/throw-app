@@ -1,24 +1,31 @@
 import { ActionFunctionArgs } from '@remix-run/node'
-import { useParams, Form, redirect } from "@remix-run/react";
+import { Form, redirect } from "@remix-run/react";
 import { db } from '../utils/db.server'
 
 
-export async function action({ request }: ActionFunctionArgs) {
-  const params = useParams();
-  // const schedid = params.schedid as string;
-  // const orderid = params.orderid as string;
+export async function action({ request, params }: ActionFunctionArgs) {
+  const schedid = params.schedid as string;
+  const orderid = params.orderid as string;
 
   const formData = await request.formData()
   const name = formData.get('name') as string
   const description = formData.get('desc') as string
-  const pot = await db.pot.create({
+  const glaze = +(formData.get('glaze') as string)
+  await db.pot.create({
     data: {
-      name, description
+      name,
+      description,
+      glaze,
+      pot_order: {
+        create: {
+          order_id: +orderid
+        }
+      }
     },
     select: { id: true }
   })
 
-  return redirect(`/pottery`)
+  return redirect(`/pottery/${schedid}/${orderid}`)
 }
 
 // this is what i am rendering to the page
@@ -44,11 +51,11 @@ export default function NewPot() {
           <label>
             Glaze
             <select name='glaze' required>
-              <option value="1">White Crackle</option>
-              <option value="2">Blue</option>
-              <option value="3">Yellow</option>
-              <option value="4">Pink</option>
-              <option value="5">Brown</option>
+              <option value="1">T-bird</option>
+              <option value="2">Sunshine</option>
+              <option value="4">Starry Sky</option>
+              <option value="5">Matte Black</option>
+              <option value="0">Clear</option>
             </select>
           </label>
         </div>

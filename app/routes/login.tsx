@@ -1,5 +1,5 @@
 import { Link } from '@remix-run/react'
-import logo from '/throw.png'
+import logo from '../images/throw.png'
 import React from 'react'
 
 

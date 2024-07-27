@@ -1,5 +1,5 @@
 import { Link } from '@remix-run/react'
-import logo from '/throw.png'
+import logo from '../images/throw.png'
 
 export const meta = () => {
   return [
@@ -21,7 +21,7 @@ export default function Index() {
       </div>
 
       <div className='mx-auto mt-16 max-w-7xl text-center'>
-        <img src={logo} className='px-52 sm:px-60 md:px-72 lg:px-96' />
+        <img src={logo} className='px-52 sm:px-60 md:px-72 lg:px-96' alt='throw logo' />
         <Link
           to='book-ur-experience'
           className='bg-deep-green rounded px-4 py-2 text-white text-xl hover:bg-hover-green mx-4'

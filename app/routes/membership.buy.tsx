@@ -1,5 +1,6 @@
 import { json, useLoaderData, Form } from '@remix-run/react'
 import { db } from '../utils/db.server'
+import { ActionFunctionArgs } from '@remix-run/node'
 
 //this is my server
 export async function loader() {
@@ -13,7 +14,7 @@ export async function loader() {
       category: "membership"
     }
   })
-  const cust_aq = await db.cust_aq.findMany()
+  const cust_aq = await db.custAq.findMany()
   const availability = await db.availability.findMany()
 
   const schedule = await db.schedule.findMany()
@@ -25,7 +26,7 @@ export async function loader() {
   })
 }
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData()
   const userData = {
     firstName: formData.get('firstName'),
@@ -40,7 +41,6 @@ export async function action({ request }) {
     state: formData.get('state'),
     zipcode: formData.get('zipcode'),
   }
-  console.log(data)
   return null
 }
 
@@ -48,7 +48,7 @@ export async function action({ request }) {
 export default function BuyMembership() {
   //get the data from the server
   // useActionData()
-  const data = useLoaderData()
+  const data = useLoaderData<typeof loader>()
   return (
     <div className='mx-auto mt-16 max-w-7xl flex flex-col justify-center'>
       <h1 className='text-2xl align-center p-4'>Get Your Studio Membership!</h1>
@@ -57,51 +57,51 @@ export default function BuyMembership() {
           <div className='flex flex-row justify-between p-2'>
             <label className='px-2'>
               First Name <span className='text-red-700'>*</span>
+              <input
+                type='text'
+                name='firstName'
+                required
+                autoFocus
+                className='px-1 rounded p-1 min-w-72'
+              ></input>
             </label>
-            <input
-              type='text'
-              name='firstName'
-              required
-              autoFocus
-              className='px-1 rounded p-1 min-w-72'
-            ></input>
           </div>
 
           <div className='flex flex-row justify-between p-2'>
             <label className='px-2'>
               Last Name <span className='text-red-700'>*</span>
+              <input
+                type='text'
+                name='lastName'
+                required
+                autoFocus
+                className='px-1 rounded p-1 min-w-72'
+              ></input>
             </label>
-            <input
-              type='text'
-              name='lastName'
-              required
-              autoFocus
-              className='px-1 rounded p-1 min-w-72'
-            ></input>
           </div>
 
           <div className='flex flex-row justify-between p-2'>
             <label className='px-2'>
               Email <span className='text-red-700'>*</span>
+              <input
+                type='email'
+                name='email'
+                required
+                className='px-1 rounded p-1 min-w-72'
+              ></input>
             </label>
-            <input
-              type='email'
-              name='email'
-              required
-              className='px-1 rounded p-1 min-w-72'
-            ></input>
           </div>
 
           <div className='flex flex-row justify-between p-2'>
             <label className='px-2'>
               Phone <span className='text-red-700'>*</span>
+              <input
+                type='phone'
+                name='phone'
+                required
+                className='px-1 rounded p-1 min-w-72'
+              ></input>
             </label>
-            <input
-              type='phone'
-              name='phone'
-              required
-              className='px-1 rounded p-1 min-w-72'
-            ></input>
           </div>
 
           {/* <div className='flex flex-row justify-between p-2'>
@@ -123,15 +123,15 @@ export default function BuyMembership() {
           <div className='flex flex-row justify-between p-2'>
             <label className='px-2'>
               Which Membership? <span className='text-red-700'>*</span>
+              <select name='membership' required className='px-1 rounded p-1 min-w-72'>
+                <option value={""}>-- Select Your Membership --</option>
+                {data.memberships.map(types => (
+                  <option key={types.id} value={types.id}>
+                    {types.name} - ${types.price}
+                  </option>
+                ))}
+              </select>
             </label>
-            <select name='membership' required className='px-1 rounded p-1 min-w-72'>
-              <option value={""}>-- Select Your Membership --</option>
-              {data.memberships.map(types => (
-                <option key={types.id} value={types.id}>
-                  {types.name} - ${types.price}
-                </option>
-              ))}
-            </select>
           </div>
 
           {/* <div className='flex flex-row justify-between p-2'>
@@ -150,15 +150,15 @@ export default function BuyMembership() {
           <div className='flex flex-row justify-between p-2'>
             <label className='px-2'>
               Need Glaze or Clay? <span className='text-red-700'>*</span>
+              <select name='products' required className='px-1 rounded p-1 min-w-72'>
+                <option value={""}>-- Select Your Product --</option>
+                {data.products.map(products => (
+                  <option key={products.id} value={products.id}>
+                    {products.name} - ${products.price}
+                  </option>
+                ))}
+              </select>
             </label>
-            <select name='products' required className='px-1 rounded p-1 min-w-72'>
-              <option value={""}>-- Select Your Product --</option>
-              {data.products.map(products => (
-                <option key={products.id} value={products.id}>
-                  {products.name} - ${products.price}
-                </option>
-              ))}
-            </select>
           </div>
 
         </div>

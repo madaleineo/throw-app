@@ -1,41 +1,56 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { Form, useLoaderData, json } from '@remix-run/react'
-import logo from '/throw.png'
+import logo from '../images/throw.png'
 import { db } from '../utils/db.server'
 
 import React from 'react'
+import { ActionFunctionArgs } from '@remix-run/node'
 
 export async function loader() {
-  const cust_aq = await db.cust_aq.findMany()
+  const cust_aq = await db.custAq.findMany()
   return json({
     cust_aq
   })
 }
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData()
-  const userData = {
-    firstName: formData.get('firstName'),
-    lastName: formData.get('lastName'),
-    birthday: formData.get('birthday'),
-    gender: formData.get('gender'),
-    email: formData.get('email'),
-    phone: formData.get('phone'),
-    streetAddress1: formData.get('streetAddress1'),
-    streetAddress2: formData.get('streetAddress2'),
-    city: formData.get('city'),
-    state: formData.get('state'),
-    zipcode: formData.get('zipcode'),
-  }
-  const scheduleData = {
-    date_time: formData.get('firstName')
-  }
-  console.log(data)
+  const first_name = formData.get('firstName') as string
+  const last_name = formData.get('lastName') as string
+
+  const birthday = formData.get('birthday') as string
+  const gender = formData.get('gender') as string
+  const email = formData.get('email') as string
+  const phone = formData.get('phone') as string
+  const street_address1 = formData.get('streetAddress1') as string
+  const street_address2 = formData.get('streetAddress2') as string
+  const city = formData.get('city') as string
+  const state = formData.get('state') as string
+  const zipcode = formData.get('zipcode') as string
+
+  await db.user.create({
+    data: {
+      first_name,
+      last_name,
+      birthday,
+      gender,
+      email,
+      phone,
+      street_address1,
+      street_address2,
+      city,
+      state,
+      zipcode,
+
+    }
+  })
+
   return null
 }
 
 export default function CreateNewAccount() {
   const [error, setError] = React.useState(false)
-  const data = useLoaderData()
+  const data = useLoaderData<typeof loader>()
 
   return (
     <div className='mx-auto mt-16 max-w-7xl text-center'>
@@ -44,16 +59,7 @@ export default function CreateNewAccount() {
       </div>
       <h1 className='text-2xl'>Create Your Account!</h1>
 
-      <Form method='POST' className='max-w-3xl'
-        onSubmit={e => {
-          e.preventDefault()
-          setError(false)
-          const username = document.getElementById('username').value
-          const password = document.getElementById('password').value
-
-        }}
-      >
-
+      <Form method='POST' className='max-w-3xl'>
         <div className='p-2'>
           <label className='align-left' htmlFor='username'>
             Username
@@ -90,7 +96,6 @@ export default function CreateNewAccount() {
               type='text'
               name='firstName'
               required
-              autoFocus
               className='px-1 rounded p-1 min-w-72'
             ></input>
           </div>
@@ -103,7 +108,6 @@ export default function CreateNewAccount() {
               type='text'
               name='lastName'
               required
-              autoFocus
               className='px-1 rounded p-1 min-w-72'
             ></input>
           </div>

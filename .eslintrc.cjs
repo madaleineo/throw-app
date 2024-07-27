@@ -35,6 +35,9 @@ module.exports = {
         "plugin:react-hooks/recommended",
         "plugin:jsx-a11y/recommended",
       ],
+      rules: {
+        "jsx-a11y/no-autofocus": "off"
+      },
       settings: {
         react: {
           version: "detect",

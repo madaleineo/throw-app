@@ -3,6 +3,8 @@ import { json, useLoaderData, Form } from '@remix-run/react'
 import { db } from '../utils/db.server'
 import { useState } from 'react'
 import { parseISO, format } from 'date-fns';
+import { ActionFunctionArgs } from '@remix-run/node';
+import type * as Prisma from '@prisma/client';
 
 
 
@@ -22,7 +24,7 @@ export async function loader() {
     }
   })
   const schedules = await db.schedule.findMany()
-  const cust_aq = await db.cust_aq.findMany()
+  const cust_aq = await db.custAq.findMany()
   return json({
     delivery: [
       { id: 'pickup', label: 'Self Pickup' },
@@ -36,7 +38,7 @@ export async function loader() {
   })
 }
 
-export async function action({ request }) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData()
   const userData = {
     firstName: formData.get('firstName'),
@@ -59,12 +61,7 @@ export async function action({ request }) {
   const scheduleData = {
     date_time: formData.get('firstName')
   }
-  console.log(data)
   return null
-}
-
-function nullToEmpty(input) {
-  return input === null ? '' : input
 }
 
 // this is what i am rendering to the page
@@ -72,9 +69,9 @@ export default function BookUrExperience() {
   //get the data from the server
   // useActionData()
   const [quantity, setQuantity] = useState(0);
-  const [potteryClass, setPotteryClass] = useState(null);
-  const [clayType, setClayType] = useState(null);
-  const data = useLoaderData()
+  const [potteryClass, setPotteryClass] = useState<Prisma.Product>();
+  const [clayType, setClayType] = useState<Prisma.Product>();
+  const data = useLoaderData<typeof loader>()
   return (
     <div className='mx-auto mt-16 max-w-7xl flex flex-col justify-center'>
       <h1 className='text-2xl p-4 align-center'>Book Your Pottery Experience!</h1>
@@ -93,19 +90,6 @@ export default function BookUrExperience() {
               onChange={(e) => {
                 const id = parseInt(e.target.value);
                 const selectedClass = data.bookings.find((cls) => cls.id === id);
-
-                // Update the <p> tags with the selected class details
-                document.getElementById('class-name').innerText = selectedClass.name;
-                document.getElementById('class-duration').innerText = selectedClass.duration;
-                document.getElementById('class-description').innerText =
-                  `${selectedClass.description}`;
-                document.getElementById('class-bookings').innerText =
-                  `Bookings are based on the number of wheels you would like to reserve. If there are members in your group who are NOT making a pot (or if you are 'sharing' a wheel), please DO NOT include them in your booking. For example, if you and your date are sharing a wheel then only book for 1 wheel. So excited to have y'all in the studio!`;
-                document.getElementById('class-price').innerText =
-                  `$${selectedClass.price}/wheel + tax`;
-                document.getElementById('subtotal').innerText =
-                  `$${selectedClass.price * quantity} subtotal`;
-
                 // You can update state here if needed
                 setPotteryClass(selectedClass);
               }}
@@ -121,13 +105,13 @@ export default function BookUrExperience() {
             </select>
           </div>
 
-          <div className="p-4">
-            <p className="font-bold" id="class-name"></p>
-            <p id="class-duration"></p>
-            <p className="py-2" id="class-description"></p>
-            <p className="py-2" id="class-bookings"></p>
-            <p className="py-2" id="class-price"></p>
-          </div>
+          {!!potteryClass && <div className="p-4">
+            <p className="font-bold">{potteryClass.name}</p>
+            <p>{potteryClass.duration}</p>
+            <p className="py-2" >{potteryClass.description}</p>
+            <p className="py-2" >Bookings are based on the number of wheels you would like to reserve. If there are members in your group who are NOT making a pot (or if you are sharing a wheel), please DO NOT include them in your booking. For example, if you and your date are sharing a wheel then only book for 1 wheel. So excited to have you in the studio!</p>
+            <p className="py-2" >${potteryClass.price}/wheel + tax</p>
+          </div>}
 
           <div className='flex flex-row justify-between p-2'>
             <label className='pr-4'>
@@ -139,11 +123,6 @@ export default function BookUrExperience() {
               className='px-1 rounded p-1 min-w-72 border border-gray-300'
               onChange={(e) => {
                 const quantity = parseInt(e.target.value);
-
-                // Update the <p> tags with the selected class details
-                document.getElementById('subtotal').innerText =
-                  `$${potteryClass.price * quantity} subtotal`;
-
                 setQuantity(quantity);
 
               }}
@@ -155,7 +134,7 @@ export default function BookUrExperience() {
           </div>
 
           <div className="pb-4 pl-2">
-            <p className="py-1 text-gray-400" id="">Select the quantity of wheels you would like to reserve. <span className="float-right" id="subtotal"></span></p>
+            <p className="py-1 text-gray-400" id="">Select the quantity of wheels you would like to reserve. <span className="float-right">${((potteryClass?.price || 0) * quantity) || 0} subtotal</span></p>
           </div>
 
           <div className='flex flex-row justify-between p-2'>
@@ -182,10 +161,9 @@ export default function BookUrExperience() {
             </label>
             <select name='time' required className='px-1 rounded p-1 min-w-72 border border-gray-300'>
               {data.schedules.map(sched => {
-                const formattedDate = format(parseISO(sched.class_date), 'MMMM do');
-                const formattedTime = format(parseISO(sched.class_time), 'h:mm a');
+                const formattedDate = format(parseISO(sched.class_date), 'MMMM do @ h:mm a');
                 return (
-                  <option key={sched.id} value={sched.id}>{formattedDate} @ {formattedTime} - {sched.num_wheels_available} spots left!</option>
+                  <option key={sched.id} value={sched.id}>{formattedDate} - {sched.num_wheels_available} spots left!</option>
                 );
               })}
             </select>
@@ -198,13 +176,7 @@ export default function BookUrExperience() {
             <select name='type' required className='px-1 rounded p-1 min-w-72 border border-gray-300' onChange={(e) => {
               const clayId = parseInt(e.target.value);
               const clayType = data.clay.find((cls) => cls.id === clayId);
-
-              // Update the <p> tags with the selected class details
-              document.getElementById('subtotal2').innerText =
-                `$${(clayType.price + potteryClass.price) * quantity} subtotal`;
-
               setClayType(clayType);
-
             }}>
               <option value={""}>-- Select Your Clay Type --</option>
               {data.clay.map(types => (
@@ -216,7 +188,7 @@ export default function BookUrExperience() {
           </div>
 
           <div className="pb-4 pl-2">
-            <p className="py-1 text-gray-400" id="">Select the type of clay you plan to use. <span className="float-right" id="subtotal2"></span></p>
+            <p className="py-1 text-gray-400" id="">Select the type of clay you plan to use. <span className="float-right">${(((potteryClass?.price || 0) + (clayType?.price || 0)) * quantity) || 0} subtotal</span></p>
           </div>
 
           <div className='flex flex-row justify-between p-2'>

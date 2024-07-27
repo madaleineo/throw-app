@@ -7,90 +7,88 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model status {
+model Status {
   id   Int    @id @default(autoincrement())
   name String @db.VarChar(50)
-  pot  pot[]
+  pot  Pot[]
 }
 
-model session {
+model Session {
   id         Int      @id @default(autoincrement())
   token      String   @db.VarChar(100)
   created_at DateTime @db.Date
   user_id    Int
-  user       user     @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
 }
 
-model user_role {
+model UserRole {
   id    Int    @id @default(autoincrement())
   name  String @db.VarChar(50)
-  users user[]
+  users User[]
 }
 
-model cust_aq {
+model CustAq {
   id    Int    @id @default(autoincrement())
   type  String @db.VarChar(50)
-  users user[]
+  users User[]
 }
 
-model product {
+model Product {
   id           Int            @id @default(autoincrement())
   name         String         @db.VarChar(150)
   price        Float
   description  String?        @db.VarChar(300)
   category     String         @db.VarChar(50)
   duration     String?        @db.VarChar(50)
-  order_detail order_detail[]
-  availability availability[]
+  availability Availability[]
+  order_detail OrderDetail[]
 }
 
-model order {
-  id                Int      @id @default(autoincrement())
-  date_time         DateTime @db.Date
-  user_id           Int?     @default(0)
+model Order {
+  id                Int           @id @default(autoincrement())
+  date_time         DateTime      @db.Date
+  user_id           Int?          @default(0)
   schedule_id       Int
   num_shared_wheels Int
-  delivery          String   @db.VarChar(30)
-  name              String   @default("") @db.VarChar(30)
-
-  schedule     schedule       @relation(fields: [schedule_id], references: [id])
-  pot_order    pot_order[]
-  order_detail order_detail[]
+  delivery          String        @db.VarChar(30)
+  name              String        @default("") @db.VarChar(30)
+  schedule          Schedule      @relation(fields: [schedule_id], references: [id])
+  order_detail      OrderDetail[]
+  pot_order         PotOrder[]
 }
 
-model pot {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(100)
-  description String?  @db.VarChar(150)
-  glaze       Int      @default(1)
-  status_id   Int      @default(1)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
-
-  status    status      @relation(fields: [status_id], references: [id])
-  pot_order pot_order[]
+model Pot {
+  id          Int        @id @default(autoincrement())
+  name        String     @db.VarChar(100)
+  description String?    @db.VarChar(150)
+  glaze       Int        @default(1)
+  status_id   Int        @default(1)
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @default(now()) @updatedAt
+  status      Status     @relation(fields: [status_id], references: [id])
+  pot_order   PotOrder[]
 }
 
-model pot_order {
+model PotOrder {
   order_id Int
   pot_id   Int
-  order    order @relation(fields: [order_id], references: [id], onDelete: NoAction)
-  pot      pot   @relation(fields: [pot_id], references: [id], onDelete: NoAction)
+  order    Order @relation(fields: [order_id], references: [id], onDelete: NoAction)
+  pot      Pot   @relation(fields: [pot_id], references: [id], onDelete: NoAction)
 
   @@id([order_id, pot_id], map: "pot_order_id")
 }
 
-model order_detail {
+model OrderDetail {
   order_id   Int
   product_id Int
   qty        Int
-  order      order   @relation(fields: [order_id], references: [id], onDelete: NoAction)
-  product    product @relation(fields: [product_id], references: [id], onDelete: NoAction)
+  order      Order   @relation(fields: [order_id], references: [id], onDelete: NoAction)
+  product    Product @relation(fields: [product_id], references: [id], onDelete: NoAction)
 
   @@id([order_id, product_id], map: "product_order_id")
 }
 
-model user {
+model User {
   id              Int       @id @default(autoincrement())
   username        String?   @unique
   password        String?   @db.VarChar(100)
@@ -106,32 +104,31 @@ model user {
   role_id         Int       @default(5)
   gender          String    @db.VarChar(50)
   student_job     String?   @db.VarChar(50)
-  cust_aq_id      Int
+  cust_aq_id      Int?
   account_open    DateTime  @default(now()) @db.Date
   recent_visit    DateTime? @db.Date
   street_address1 String?   @db.VarChar(75)
   street_address2 String?   @db.VarChar(75)
-  sessions        session[]
-  role            user_role @relation(fields: [role_id], references: [id])
-  cust_aq         cust_aq   @relation(fields: [cust_aq_id], references: [id])
+  sessions        Session[]
+  cust_aq         CustAq?   @relation(fields: [cust_aq_id], references: [id])
+  role            UserRole  @relation(fields: [role_id], references: [id])
 }
 
-model availability {
+model Availability {
   id         String     @id
   day        String     @db.VarChar(10)
-  time       DateTime   @db.Time()
+  time       DateTime   @db.Time(6)
   product_id Int
   num_spots  Int        @default(10)
-  products   product    @relation(fields: [product_id], references: [id])
-  schedules  schedule[]
+  products   Product    @relation(fields: [product_id], references: [id])
+  schedules  Schedule[]
 }
 
-model schedule {
+model Schedule {
   id                   Int          @id @default(autoincrement())
-  class_date           DateTime     @default(now()) @db.Date
-  class_time           DateTime     @default(now()) @db.Time
+  class_date           DateTime     @db.Timestamptz(3)
   availability_id      String
   num_wheels_available Int          @default(10)
-  availability         availability @relation(fields: [availability_id], references: [id])
-  orders               order[]
+  orders               Order[]
+  availability         Availability @relation(fields: [availability_id], references: [id])
 }
