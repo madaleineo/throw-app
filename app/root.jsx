@@ -4,7 +4,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useRouteError
+  //useRouteError
 } from '@remix-run/react'
 
 import stylesheet from './tailwind.css?url'
@@ -24,7 +24,7 @@ export function Layout({ children }) {
         <Meta />
         <Links />
       </head>
-      <body className='bg-burnt-orange'>
+      <body className='bg-white'>
         {children}
         <ScrollRestoration />
         <Scripts />
