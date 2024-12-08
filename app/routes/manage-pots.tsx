@@ -136,7 +136,7 @@ export default function ManagePots() {
   return (
     <div className="w-screen min-h-screen flex flex-col items-center p-12 bg-burnt-orange">
       <h2 className="text-xl font-bold mb-4">Manage Pots</h2>
-      <div className="mb-6 w-full max-w-4xl">
+      <div className="mb-6 w-full max-w-6xl">
         <div className="flex flex-wrap gap-4 mb-4 items-end">
           <div>
             <label htmlFor="startDate" className="block mb-1">Start Date</label>
@@ -171,12 +171,14 @@ export default function ManagePots() {
               className="w-full border rounded px-2 py-1"
             />
           </div>
-          <button
-            onClick={handleMassUpdate}
-            className="ml-auto px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Mark All Filtered as Packaged
-          </button>
+          <div className='flex-1'>
+            <button
+              onClick={handleMassUpdate}
+              className="ml-auto px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800"
+            >
+              Mark All Filtered as Packaged
+            </button>
+          </div>
         </div>
       </div>
       <table className="table-auto w-full border-collapse border border-gray-500">
@@ -213,7 +215,7 @@ export default function ManagePots() {
                   </select>
                   <button
                     type="submit"
-                    className="ml-2 px-4 py-1 bg-blue-500 text-white rounded"
+                    className="ml-2 px-4 py-1 bg-green-600 text-white rounded"
                   >
                     Update
                   </button>
