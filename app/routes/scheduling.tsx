@@ -42,14 +42,14 @@ export default function Pottery() {
           </button>
         </div>
       </div>
-      <div className="flex flex-col w-eighty p-8">
+      <div className="flex flex-col w-full p-8">
         <div className="flex flex-row justify-center">
           <h2 className="font-normal size-8 px-24 hover:cursor-pointer text-nowrap text-plurple">Event Types</h2>
           <h2 className="font-normal size-8 px-24 hover:cursor-pointer  hover:text-plurple">Schedule</h2>
           <h2 className="font-normal size-8 px-24 hover:cursor-pointer text-nowrap hover:text-plurple">Generate Next Month</h2>
         </div>
-        <div className="py-16 pl-12 flex flex-stretch">
-          <table className="w-eighty">
+        <div className="py-16 px-12 flex flex-stretch">
+          <table className="w-full">
             <tbody>
               <tr>
                 <td className="py-4 font-semibold">Pottery Experience</td>

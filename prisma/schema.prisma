@@ -41,20 +41,17 @@ model Product {
   category     String         @db.VarChar(50)
   duration     String?        @db.VarChar(50)
   availability Availability[]
-  order_detail OrderDetail[]
 }
 
 model Order {
-  id                Int           @id @default(autoincrement())
-  date_time         DateTime      @db.Date
-  user_id           Int?          @default(0)
+  id                Int      @id @default(autoincrement())
+  date_time         DateTime @db.Date
+  user_id           Int?     @default(0)
   schedule_id       Int
   num_shared_wheels Int
-  delivery          String        @db.VarChar(30)
-  name              String        @default("") @db.VarChar(30)
-  schedule          Schedule      @relation(fields: [schedule_id], references: [id])
-  order_detail      OrderDetail[]
-  pot_order         PotOrder[]
+  delivery          String   @db.VarChar(30)
+  name              String   @default("") @db.VarChar(30)
+  schedule          Schedule @relation(fields: [schedule_id], references: [id])
 }
 
 model Pot {
@@ -66,26 +63,27 @@ model Pot {
   created_at  DateTime   @default(now())
   updated_at  DateTime   @default(now()) @updatedAt
   status      Status     @relation(fields: [status_id], references: [id])
-  pot_order   PotOrder[]
+  pot_group   PotGroup[]
 }
 
-model PotOrder {
-  order_id Int
+model Group {
+  id             Int        @id @default(autoincrement())
+  name           String
+  time_stamp     DateTime   @default(now())
+  phone          String
+  picked_up      Boolean    @default(false)
+  reminder_count Int        @default(0)
+  group_complete Boolean    @default(false)
+  pot_group      PotGroup[]
+}
+
+model PotGroup {
+  group_id Int
   pot_id   Int
-  order    Order @relation(fields: [order_id], references: [id], onDelete: NoAction)
+  group    Group @relation(fields: [group_id], references: [id], onDelete: NoAction)
   pot      Pot   @relation(fields: [pot_id], references: [id], onDelete: NoAction)
 
-  @@id([order_id, pot_id], map: "pot_order_id")
-}
-
-model OrderDetail {
-  order_id   Int
-  product_id Int
-  qty        Int
-  order      Order   @relation(fields: [order_id], references: [id], onDelete: NoAction)
-  product    Product @relation(fields: [product_id], references: [id], onDelete: NoAction)
-
-  @@id([order_id, product_id], map: "product_order_id")
+  @@id([group_id, pot_id], map: "pot_group_id")
 }
 
 model User {

@@ -57,7 +57,7 @@ export default function Pottery() {
           </div>
         </div>
         <div className="py-16 flex">
-          <table className="w-eighty">
+          <table className="w-full">
             <thead className="text-left border-b-2">
               <tr>
                 <th className="py-2">Name</th>

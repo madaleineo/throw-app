@@ -44,7 +44,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
     }
   })
-
   return null
 }
 
@@ -152,8 +151,6 @@ export default function CreateNewAccount() {
         </div>
 
         <div className='border'>
-
-
           <div className='flex flex-row justify-between p-2'>
             <label className='px-12'>
               Street Address 1 <span className='text-red-700'>*</span>
@@ -262,7 +259,6 @@ export default function CreateNewAccount() {
           </div>
         </div>
 
-
         <button
           type='submit'
           className='bg-deep-green rounded px-4 py-2 text-white text-xl hover:bg-hover-green'
@@ -270,7 +266,6 @@ export default function CreateNewAccount() {
           Create Account
         </button>
       </Form>
-
     </div>
   )
 }

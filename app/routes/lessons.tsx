@@ -2,28 +2,40 @@ import { useState } from 'react';
 import { Link } from "@remix-run/react";
 import logo from "app/images/throw.png";
 
-export default function Pottery() {
+export default function Lessons() {
   const [dateFilter, setDateFilter] = useState("");
   const [nameFilter, setNameFilter] = useState("");
 
-  const sessions = [
-    { id: '1', name: "Mandy Parker", date: "2024-11-12", people: 2, wheels: 1, status: "In progress" },
-    { id: '2', name: "TJ Decker", date: "2024-11-12", people: 2, wheels: 1, status: "In progress" },
-    { id: '3', name: "Paula Higgins", date: "2024-11-12", people: 2, wheels: 1, status: "In progress" },
-    { id: '4', name: "Michael Phelps", date: "2024-11-14", people: 2, wheels: 2, status: "Upcoming" },
-    { id: '5', name: "Joshua Felt", date: "2024-11-14", people: 2, wheels: 2, status: "Upcoming" },
-    { id: '6', name: "Vanessa Moody", date: "2024-11-14", people: 2, wheels: 2, status: "Upcoming" },
-    { id: '7', name: "Michael Pastor", date: "2024-11-14", people: 2, wheels: 2, status: "Upcoming" },
-    { id: '8', name: "Cindy Loo Hoo", date: "2024-11-11", people: 4, wheels: 3, status: "Paid" },
-    { id: '9', name: "Vindy Allen", date: "2024-11-11", people: 4, wheels: 3, status: "Paid" },
-    { id: '10', name: "Franklin D. Roosevelt", date: "2024-11-13", people: 4, wheels: 3, status: "Upcoming" },
-    { id: '11', name: "Barney", date: "2024-11-13", people: 4, wheels: 3, status: "Upcoming" },
-    { id: '12', name: "Mr. Sykes", date: "2024-11-13", people: 4, wheels: 3, status: "Upcoming" },
-    { id: '13', name: "Miss Muffet", date: "2024-11-11", people: 4, wheels: 4, status: "Paid" },
-    { id: '14', name: "Miss Piggy", date: "2024-11-11", people: 4, wheels: 4, status: "No show" },
+  const lessons = [
+    { id: '1', name: "Date Night Class", date: "2024-12-09", time: "6:00 PM" },
+    { id: '2', name: "Date Night Class", date: "2024-12-09", time: "8:00 PM" },
+    { id: '3', name: "Date Night Class", date: "2024-12-10", time: "6:00 PM" },
+    { id: '4', name: "Date Night Class", date: "2024-12-10", time: "8:00 PM" },
+    { id: '5', name: "Date Night Class", date: "2024-12-11", time: "6:00 PM" },
+    { id: '6', name: "Date Night Class", date: "2024-12-11", time: "8:00 PM" },
+    { id: '7', name: "Date Night Class", date: "2024-12-12", time: "6:00 PM" },
+    { id: '8', name: "Date Night Class", date: "2024-12-12", time: "8:00 PM" },
+    { id: '9', name: "Date Night Class", date: "2024-12-13", time: "6:00 PM" },
+    { id: '10', name: "Date Night Class", date: "2024-12-13", time: "8:00 PM" },
+    { id: '11', name: "Date Night Class", date: "2024-12-14", time: "6:00 PM" },
+    { id: '12', name: "Date Night Class", date: "2024-12-14", time: "8:00 PM" },
+    { id: '13', name: "Date Night Class", date: "2024-12-15", time: "6:00 PM" },
+    { id: '14', name: "Date Night Class", date: "2024-12-15", time: "8:00 PM" },
+    { id: '15', name: "Date Night Class", date: "2024-12-16", time: "6:00 PM" },
+    { id: '16', name: "Date Night Class", date: "2024-12-16", time: "8:00 PM" },
   ];
 
-  const filteredSessions = sessions
+  const groups = [
+    { id: '1', name: "Group Name 1", numPeople: 5, numWheels: 5, lessonId: '1' },
+    { id: '2', name: "Group Name 2", numPeople: 2, numWheels: 2, lessonId: '1' },
+    { id: '3', name: "Group Name 3", numPeople: 3, numWheels: 3, lessonId: '2' },
+    { id: '4', name: "Group Name 4", numPeople: 4, numWheels: 4, lessonId: '2' },
+    { id: '5', name: "Group Name 5", numPeople: 6, numWheels: 6, lessonId: '3' },
+    { id: '6', name: "Group Name 6", numPeople: 8, numWheels: 8, lessonId: '4' },
+    { id: '7', name: "Group Name 7", numPeople: 2, numWheels: 2, lessonId: '4' },
+  ];
+
+  const filteredLessons = lessons
     .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort by date
     .filter(session => {
       const matchesDate = dateFilter ? session.date === dateFilter : true;
@@ -35,22 +47,6 @@ export default function Pottery() {
   const clearFilters = () => {
     setDateFilter("");
     setNameFilter("");
-  };
-
-  // Function to get color class for each status
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Upcoming":
-        return "bg-blue-100 text-blue-700";
-      case "In progress":
-        return "bg-yellow-100 text-yellow-700";
-      case "Paid":
-        return "bg-green-200 text-green-700";
-      case "No show":
-        return "bg-red-200 text-red-900";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
   };
 
   return (
@@ -97,8 +93,8 @@ export default function Pottery() {
         <div className="flex flex-col w-eighty p-8">
           <div className="flex flex-row justify-between">
             <div>
-              <h2 className="font-bold size-8">Sessions</h2>
-              <p className="w-sixty">A list of all groups that will be attending the studio. These will typically be created through the signup form, but you can manually add groups here too.</p>
+              <h2 className="font-bold size-8">Lessons</h2>
+              <p className="w-sixty">A list of upcoming lessons. </p>
             </div>
             <div>
               <button className="flex flex-row bg-plurple hover:bg-hover-plurple text-white px-2 py-1 rounded-sm min-w-32">
@@ -133,28 +129,31 @@ export default function Pottery() {
             </button>
           </div>
 
-          {/* Filtered Sessions */}
-          {filteredSessions.map((session, index) => (
+          {/* Filtered Lessons */}
+          {filteredLessons.map((lessons, index) => (
             <div className="py-4" key={index}>
               <div className="flex flex-row justify-between">
                 <div>
                   <h2 className="font-bold">
-                    {session.name}
-                    <span className={`ml-4 px-2 font-normal rounded-sm ${getStatusColor(session.status)}`}>
-                      {session.status}
-                    </span>
+                    {lessons.name}
                   </h2>
-                  <p className="font-light">{session.date}  •  {session.people} people  •  {session.wheels} wheels</p>
+                  <p className="font-light">{lessons.date}  •  {lessons.time} </p>
+                  {groups.map((groups, gIndex) => (
+                    groups.lessonId === lessons.id &&
+                    < div className='' key={gIndex} >
+                      <h2>{groups.name}  -  {groups.numPeople} People  •  {groups.numWheels} Wheels </h2>
+                    </div>
+                  ))}
                 </div>
                 <div>
-                  <Link to={`/add-pot/${session.id}`} className="flex flex-row hover:bg-gray-200 text-black py-1 px-3 rounded-sm min-w-28 border">
+                  <Link to={`/add-pot/${lessons.id}`} className="flex flex-row hover:bg-gray-200 text-black py-1 px-3 rounded-sm min-w-28 border">
                     Add Pots
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="-4 -2 26 22" strokeWidth={1} stroke="gray" className="size-5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="..." />
                     </svg>
                   </Link>
-                  <Link to={`/edit-session/${session.id}`} className="flex flex-row hover:bg-gray-200 text-black py-1 px-3 rounded-sm min-w-28 border">
-                    Edit Session
+                  <Link to={`/edit-session/${lessons.id}`} className="flex flex-row hover:bg-gray-200 text-black py-1 px-3 rounded-sm min-w-28 border">
+                    Edit Lesson
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="-4 -2 26 22" strokeWidth={1} stroke="gray" className="size-5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="..." />
                     </svg>
@@ -164,7 +163,7 @@ export default function Pottery() {
             </div>
           ))}
         </div>
-      </div>
+      </div >
     </>
   )
 }
