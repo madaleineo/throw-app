@@ -55,35 +55,25 @@ model Order {
 }
 
 model Pot {
-  id          Int        @id @default(autoincrement())
-  name        String     @db.VarChar(100)
-  description String?    @db.VarChar(150)
-  glaze       Int        @default(1)
-  status_id   Int        @default(1)
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @default(now()) @updatedAt
-  status      Status     @relation(fields: [status_id], references: [id])
-  pot_group   PotGroup[]
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?  @db.VarChar(150)
+  glaze       Int      @default(1)
+  status_id   Int      @default(1)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+  group_id    Int      @default(0)
+  status      Status   @relation(fields: [status_id], references: [id])
 }
 
 model Group {
-  id             Int        @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   name           String
-  time_stamp     DateTime   @default(now())
+  time_stamp     DateTime @default(now())
   phone          String
-  picked_up      Boolean    @default(false)
-  reminder_count Int        @default(0)
-  group_complete Boolean    @default(false)
-  pot_group      PotGroup[]
-}
-
-model PotGroup {
-  group_id Int
-  pot_id   Int
-  group    Group @relation(fields: [group_id], references: [id], onDelete: NoAction)
-  pot      Pot   @relation(fields: [pot_id], references: [id], onDelete: NoAction)
-
-  @@id([group_id, pot_id], map: "pot_group_id")
+  picked_up      Boolean  @default(false)
+  reminder_count Int      @default(0)
+  group_complete Boolean  @default(false)
 }
 
 model User {
