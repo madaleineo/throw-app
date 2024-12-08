@@ -73,6 +73,7 @@ model Group {
   phone          String
   picked_up      Boolean  @default(false)
   reminder_count Int      @default(0)
+  date_reminded  DateTime @default(now())
   group_complete Boolean  @default(false)
 }
 
