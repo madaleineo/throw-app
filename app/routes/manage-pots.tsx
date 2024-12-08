@@ -134,7 +134,7 @@ export default function ManagePots() {
   };
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center p-12 bg-burnt-orange">
+    <div className="w-screen min-h-screen flex flex-col items-center p-12 bg-burnt-orange">
       <h2 className="text-xl font-bold mb-4">Manage Pots</h2>
       <div className="mb-6 w-full max-w-4xl">
         <div className="flex flex-wrap gap-4 mb-4 items-end">
