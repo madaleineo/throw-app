@@ -71,6 +71,7 @@ model Group {
   name           String
   time_stamp     DateTime @default(now())
   phone          String
+  email          String   @default("")
   picked_up      Boolean  @default(false)
   reminder_count Int      @default(0)
   date_reminded  DateTime @default(now())

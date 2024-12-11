@@ -58,7 +58,7 @@ type Pot = {
 };
 
 export default function AddPot() {
-  const { group, pots: initialPots } = useLoaderData<{ group: { id: number; name: string; phone: string }; pots: Pot[] }>();
+  const { group, pots: initialPots } = useLoaderData<{ group: { id: number; name: string; phone: string; email: string; }; pots: Pot[] }>();
   const [artistName, setArtistName] = useState("");
   const [description, setDescription] = useState("");
   const [pots, setPots] = useState(initialPots);
@@ -95,27 +95,27 @@ export default function AddPot() {
   return (
     <div className="w-screen h-screen flex flex-row justify-center p-12 bg-burnt-orange">
       {/* Group Info Section */}
-      <div className="flex flex-col w-96">
-        <h1 className="w-sixty font-bold text-xl">{group.name}</h1>
-        <h1 className="w-sixty font-bold text-xl pb-2">Group Information</h1>
-        <h2 className="w-sixty font-normal size-8">Phone Number: {group.phone}</h2>
-        <p className="w-sixty">
+      <div className="flex flex-col w-96 items-center px-4">
+        <h1 className="w-sixty font-bold text-xl pb-6">{group.name}</h1>
+        <h2 className="w-sixty font-normal size-8"><strong>Email:</strong> {group.email}</h2>
+        <h2 className="w-sixty font-normal size-8"><strong>Phone:</strong> {group.phone}</h2>
+        <p className="w-sixty py-4">
           Add pots to your group with your name and a short description including color and any other defining features.
         </p>
-        <div className="py-4">
-          <Link to="/groups" className="py-2 px-8 bg-deep-green rounded hover:bg-hover-green text-white transition text-lg font-semibold">
+        <div className="py-3">
+          <Link to="/groups" className="py-2 px-12 bg-deep-green rounded hover:bg-hover-green text-white transition text-md font-semibold">
             Back To Groups
           </Link>
         </div>
       </div>
 
       {/* Add Pot Section */}
-      <div className="flex flex-col items-center w-96 px-24">
-        <h2 className="text-xl font-bold mb-4">Add New Pot</h2>
+      <div className="flex flex-col items-center w-96 px-4 ">
+        <h2 className="text-xl font-bold pb-6">Add New Pot</h2>
         <Form className="flex flex-col" onSubmit={handleAddPot}>
           <input type="hidden" value={group.id} />
-          <div className="flex flex-col pt-2">
-            <label htmlFor="artist_name">Artist Name</label>
+          <div className="flex flex-col ">
+            <label htmlFor="artist_name">Name on Bottom of Pot</label>
             <input
               id="artist_name"
               type="text"
@@ -128,19 +128,19 @@ export default function AddPot() {
           </div>
           <div className="flex flex-col py-4">
             <label htmlFor="description">Description: </label>
-            <input
+            <textarea
               id="description"
-              type="text"
               placeholder="Pink with flowers"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="rounded px-2 py-1"
+              className="rounded px-2 py-1 resize-none h-24 w-full"
               required
             />
           </div>
+
           <button
             type="submit"
-            className="py-2 px-8 bg-deep-green rounded hover:bg-hover-green text-white transition text-lg font-semibold"
+            className="py-2 px-8 bg-deep-green rounded hover:bg-hover-green text-white transition text-md font-semibold"
           >
             Add Pot
           </button>
@@ -148,15 +148,15 @@ export default function AddPot() {
       </div>
 
       {/* Display Pots Section */}
-      <div className="flex flex-col items-center w-96 px-24">
-        <h2 className="text-xl font-bold mb-4">Pots</h2>
-        <div className="flex flex-col gap-4 w-80">
+      <div className="flex flex-col items-center w-96 px-4">
+        <h2 className="text-xl font-bold pb-6">Pots</h2>
+        <div className="flex flex-col w-60 gap-4">
           {pots.map((pot) => (
             <div
               key={pot.id}
-              className="bg-deep-green text-white px-6 py-2 rounded text-center cursor-pointer hover:bg-hover-green"
+              className=" bg-pale-yellow px-2 py-2 rounded text-center"
             >
-              <h2 className="text-lg font-semibold">{pot.name} - {pot.description}</h2>
+              <h2 className="text-md font-semibold">{pot.name} - {pot.description}</h2>
             </div>
           ))}
         </div>
