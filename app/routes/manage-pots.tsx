@@ -1,6 +1,6 @@
-import { useLoaderData, json, Form, useFetcher } from '@remix-run/react';
+import { useLoaderData, json, Form } from '@remix-run/react';
 import { db } from '../utils/db.server';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 export async function loader() {
   const pots = await db.pot.findMany();
@@ -114,6 +114,7 @@ async function sendGHLTextMessage(phoneNumber: string) {
       locationId,
       fromNumber: '+13854752856',
       toNumber: `+1${phoneNumber}`,
+      messageType: 'OUTBOUND',
       message: message
     })
   });
@@ -133,16 +134,14 @@ export default function ManagePots() {
   const [filters, setFilters] = useState({ startDate: '', endDate: '' });
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetcher = useFetcher();
+  // useEffect(() => {
+  //   // Poll every 30 seconds
+  //   const intervalId = setInterval(() => {
+  //     fetcher.load("/trigger-check");
+  //   }, 30000);
 
-  useEffect(() => {
-    // Poll every 30 seconds
-    const intervalId = setInterval(() => {
-      fetcher.load("/trigger-check");
-    }, 30000);
-
-    return () => clearInterval(intervalId);
-  }, [fetcher]);
+  //   return () => clearInterval(intervalId);
+  // }, [fetcher]);
 
   const handleStatusChange = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -212,11 +211,18 @@ export default function ManagePots() {
     }
   };
 
+
+  // Clear filters function
+  const handleClearFilters = () => {
+    setFilters({ startDate: '', endDate: '' });
+    setSearchQuery('');
+  };
+
   return (
     <div className="w-screen min-h-screen flex flex-col items-center p-12 bg-burnt-orange">
       <h2 className="text-xl font-bold mb-4">Manage Pots</h2>
       <div className="mb-6 w-full max-w-4xl">
-        <div className="flex flex-wrap gap-4 mb-4 items-end">
+        <div className="flex gap-2 pb-4 items-end">
           <div>
             <label htmlFor="startDate" className="block mb-1">Start Date</label>
             <input
@@ -225,21 +231,21 @@ export default function ManagePots() {
               name="startDate"
               value={filters.startDate}
               onChange={(e) => setFilters((prev) => ({ ...prev, startDate: e.target.value }))}
-              className="border rounded px-2 py-1"
+              className="border rounded px-2 w-40"
             />
           </div>
           <div>
-            <label htmlFor="endDate" className="block mb-1">End Date</label>
+            <label htmlFor="endDate" className="block pb-1">End Date</label>
             <input
               type="date"
               id="endDate"
               name="endDate"
               value={filters.endDate}
               onChange={(e) => setFilters((prev) => ({ ...prev, endDate: e.target.value }))}
-              className="border rounded px-2 py-1"
+              className="border rounded px-2 w-40"
             />
           </div>
-          <div className="flex-1">
+          <div className="">
             <label htmlFor="searchQuery" className="block mb-1">Search</label>
             <input
               type="text"
@@ -247,15 +253,25 @@ export default function ManagePots() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
-              className="w-full border rounded px-2 py-1"
+              className="w-48 border rounded px-2"
             />
           </div>
-          <button
-            onClick={handleMassUpdate}
-            className="ml-auto px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Mark All Filtered as Packaged
-          </button>
+          <div className=''>
+            <button
+              onClick={handleClearFilters} // Clear filters button
+              className="ml-auto px-2 py-2 bg-pale-yellow rounded hover:bg-hover-yellow"
+            >
+              Clear Filters
+            </button>
+          </div>
+          <div className='flex-1'>
+            <button
+              onClick={handleMassUpdate}
+              className="ml-auto px-2 py-2 bg-deep-green text-white rounded hover:bg-hover-green"
+            >
+              Mark Selected As Packaged
+            </button>
+          </div>
         </div>
       </div>
       <table className="table-auto w-full border-collapse border border-gray-500">
@@ -282,7 +298,7 @@ export default function ManagePots() {
                   <select
                     name="status_id"
                     defaultValue={pot.status_id}
-                    className="border rounded"
+                    className="border rounded bg-pale-yellow"
                   >
                     {data.statuses.map((status) => (
                       <option key={status.id} value={status.id}>
@@ -292,7 +308,7 @@ export default function ManagePots() {
                   </select>
                   <button
                     type="submit"
-                    className="ml-2 px-4 py-1 bg-blue-500 text-white rounded"
+                    className="ml-2 px-4 py-1 bg-deep-green text-white rounded hover:bg-hover-green"
                   >
                     Update
                   </button>

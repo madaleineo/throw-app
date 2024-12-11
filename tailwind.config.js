@@ -7,8 +7,10 @@ export default {
         'burnt-orange': '#DDC3AA',
         'pale-yellow': '#FAF6EA',
         'deep-green': '#868866',
-        'hover-green': '#92956f',
         'hover-orange': '#ebdbcc',
+        'hover-yellow': '#f5edd5',
+        'hover-green': '#92956f',
+        'mid-yellow': '#f0e4c0',
         'plurple': '#5046e5',
         'hover-plurple': '#6460ea'
       },

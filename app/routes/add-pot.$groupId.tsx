@@ -110,7 +110,7 @@ export default function AddPot() {
       </div>
 
       {/* Add Pot Section */}
-      <div className="flex flex-col items-center w-96 px-4 ">
+      <div className="flex flex-col items-center w-96 px-4">
         <h2 className="text-xl font-bold pb-6">Add New Pot</h2>
         <Form className="flex flex-col" onSubmit={handleAddPot}>
           <input type="hidden" value={group.id} />
