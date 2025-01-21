@@ -97,7 +97,7 @@ export default function AddPot() {
       {/* Group Info Section */}
       <div className="flex flex-col w-96 items-center px-4">
         <h1 className="w-sixty font-bold text-xl pb-6">{group.name}</h1>
-        <h2 className="w-sixty font-normal size-8"><strong>Email:</strong> {group.email}</h2>
+        <h2 className="w-sixty font-normal size-8 pb-16"><strong>Email:</strong> {group.email}</h2>
         <h2 className="w-sixty font-normal size-8"><strong>Phone:</strong> {group.phone}</h2>
         <p className="w-sixty py-4">
           Add pots to your group with your name and a short description including color and any other defining features.

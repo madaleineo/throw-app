@@ -13,7 +13,7 @@ import { renderToPipeableStream } from 'react-dom/server'
 
 const ABORT_DELAY = 5_000
 
-export default function handleRequest (
+export default function handleRequest(
   request,
   responseStatusCode,
   responseHeaders,
@@ -22,20 +22,20 @@ export default function handleRequest (
 ) {
   return isbot(request.headers.get('user-agent') || '')
     ? handleBotRequest(
-        request,
-        responseStatusCode,
-        responseHeaders,
-        remixContext
-      )
+      request,
+      responseStatusCode,
+      responseHeaders,
+      remixContext
+    )
     : handleBrowserRequest(
-        request,
-        responseStatusCode,
-        responseHeaders,
-        remixContext
-      )
+      request,
+      responseStatusCode,
+      responseHeaders,
+      remixContext
+    )
 }
 
-function handleBotRequest (
+function handleBotRequest(
   request,
   responseStatusCode,
   responseHeaders,
@@ -50,7 +50,7 @@ function handleBotRequest (
         abortDelay={ABORT_DELAY}
       />,
       {
-        onAllReady () {
+        onAllReady() {
           shellRendered = true
           const body = new PassThrough()
           const stream = createReadableStreamFromReadable(body)
@@ -66,10 +66,10 @@ function handleBotRequest (
 
           pipe(body)
         },
-        onShellError (error) {
+        onShellError(error) {
           reject(error)
         },
-        onError (error) {
+        onError(error) {
           responseStatusCode = 500
           // Log streaming rendering errors from inside the shell.  Don't log
           // errors encountered during initial shell rendering since they'll
@@ -85,7 +85,7 @@ function handleBotRequest (
   })
 }
 
-function handleBrowserRequest (
+function handleBrowserRequest(
   request,
   responseStatusCode,
   responseHeaders,
@@ -100,7 +100,7 @@ function handleBrowserRequest (
         abortDelay={ABORT_DELAY}
       />,
       {
-        onShellReady () {
+        onShellReady() {
           shellRendered = true
           const body = new PassThrough()
           const stream = createReadableStreamFromReadable(body)
@@ -116,10 +116,10 @@ function handleBrowserRequest (
 
           pipe(body)
         },
-        onShellError (error) {
+        onShellError(error) {
           reject(error)
         },
-        onError (error) {
+        onError(error) {
           responseStatusCode = 500
           // Log streaming rendering errors from inside the shell.  Don't log
           // errors encountered during initial shell rendering since they'll

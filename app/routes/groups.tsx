@@ -132,12 +132,12 @@ export default function Groups() {
         <h2 className="text-xl font-bold mb-4">Select Your Group</h2>
         <div className="flex flex-col gap-4">
           {groups.map((group) => (
-            <div
+            <Link to={`/add-pot/${group.id}`}
               key={group.id}
               className="bg-deep-green text-white px-6 py-2 rounded text-center cursor-pointer hover:bg-hover-green"
             >
-              <Link to={`/add-pot/${group.id}`} className="text-lg font-semibold">{group.name}</Link>
-            </div>
+              <span className="text-lg font-semibold">{group.name}</span>
+            </Link>
           ))}
         </div>
       </div>

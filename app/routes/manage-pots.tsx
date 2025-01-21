@@ -15,7 +15,7 @@ export async function loader() {
       status: status ? status.name : 'Unknown',
       status_id: pot.status_id,
       groupName: group ? group.name : 'No Group',
-      groupPhone: group ? group.phone : null
+      groupPhone: group ? group.phone : null,
     };
   });
 
@@ -31,25 +31,18 @@ export async function action({ request }: { request: Request }) {
 
   try {
     if (actionType === 'massUpdate' && potIds.length > 0) {
-      // Mass update of pots
       const ids = potIds.map((id) => parseInt(id as string, 10));
-      // Update all pots to status_id = 2 (packaged)
       await db.pot.updateMany({
         where: { id: { in: ids } },
         data: { status_id: 2 },
       });
-
-      // After mass update, check if all pots in those groups are now packaged
       await checkAndTriggerGHL(ids);
       return json({ success: true });
     } else if (potId && status_id) {
-      // Single pot update
       const updatedPot = await db.pot.update({
         where: { id: parseInt(potId as string, 10) },
         data: { status_id: parseInt(status_id as string, 10) },
       });
-
-      // Check if all pots in this pot's group are now packaged
       await checkAndTriggerGHL([updatedPot.id]);
       return json({ success: true });
     } else {
@@ -61,52 +54,42 @@ export async function action({ request }: { request: Request }) {
   }
 }
 
-// Helper function to check if all pots in a group are packaged, and if so, send a GHL text message
 async function checkAndTriggerGHL(potIds: number[]) {
-  // Find unique group IDs from these pots
   const pots = await db.pot.findMany({
     where: { id: { in: potIds } },
-    select: { group_id: true }
+    select: { group_id: true },
   });
 
-  // Unique group IDs
-  const groupIds = [...new Set(pots.map(p => p.group_id))];
+  const groupIds = [...new Set(pots.map((p) => p.group_id))];
 
   for (const groupId of groupIds) {
-    // Check if all pots in the group are status = 2
     const groupPots = await db.pot.findMany({
       where: { group_id: groupId },
     });
 
-    const allPackaged = groupPots.every(p => p.status_id === 2);
+    const allPackaged = groupPots.every((p) => p.status_id === 2);
     if (allPackaged) {
-      // All pots in this group are packaged
       const group = await db.group.findUnique({ where: { id: groupId } });
       if (group && group.phone) {
-        // Trigger GHL SMS
         await sendGHLTextMessage(group.phone);
       }
     }
   }
 }
 
-// Example function to send text via GoHighLevel API
 async function sendGHLTextMessage(phoneNumber: string) {
   const locationId = process.env.GHL_LOCATION_ID;
   const apiKey = process.env.GHL_API_KEY;
 
-  const message = "Hello there! Your pots from THROW Art Studios are now ready to be picked up! Please remember that you have 14 days to pick up your pots. If you do not pick them up within 14 days, we will sadly have to destroy them. Please click this link to schedule a time to pick up your pots. https://fareharbor.com/embeds/book/luv-jp/items/562991/calendar/2024/12/?flow=1022190&full-items=yes";
-
-  // According to GHL API docs, sending a message typically looks like this:
-  // POST /conversations/messages
-  // Body: { "locationId": "...", "toNumber": "+1234567890", "channelType": "SMS", "message": "..." }
+  const message =
+    'Hello there! Your pots from THROW Art Studios are now ready to be picked up! Please remember that you have 14 days to pick up your pots. If you do not pick them up within 14 days, we will sadly have to destroy them. Please click this link to schedule a time to pick up your pots. https://fareharbor.com/embeds/book/luv-jp/items/562991/calendar/2024/12/?flow=1022190&full-items=yes';
 
   const response = await fetch('https://services.leadconnectorhq.com/conversations/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-      'Version': '2021-04-15'
+      Authorization: `Bearer ${apiKey}`,
+      Version: '2021-04-15',
     },
     body: JSON.stringify({
       type: 'SMS',
@@ -115,33 +98,33 @@ async function sendGHLTextMessage(phoneNumber: string) {
       fromNumber: '+13854752856',
       toNumber: `+1${phoneNumber}`,
       messageType: 'OUTBOUND',
-      message: message
-    })
+      message: message,
+    }),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error("[GHL] Failed to send SMS:", response.status, response.statusText, errorText);
+    console.error('[GHL] Failed to send SMS:', response.status, response.statusText, errorText);
   } else {
-    console.log("[GHL] SMS successfully sent to:", phoneNumber);
+    console.log('[GHL] SMS successfully sent to:', phoneNumber);
   }
 }
 
 export default function ManagePots() {
-
   const data = useLoaderData<typeof loader>();
   const [pots, setPots] = useState(data.pots);
   const [filters, setFilters] = useState({ startDate: '', endDate: '' });
   const [searchQuery, setSearchQuery] = useState('');
+  const [showPackaged, setShowPackaged] = useState(false); // Added toggle state
 
-  // useEffect(() => {
-  //   // Poll every 30 seconds
-  //   const intervalId = setInterval(() => {
-  //     fetcher.load("/trigger-check");
-  //   }, 30000);
+  const handleTogglePackagedView = () => {
+    setShowPackaged((prev) => !prev); // Toggle packaged/unpackaged view
+  };
 
-  //   return () => clearInterval(intervalId);
-  // }, [fetcher]);
+  const handleClearFilters = () => {
+    setFilters({ startDate: '', endDate: '' });
+    setSearchQuery('');
+  };
 
   const handleStatusChange = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -171,6 +154,8 @@ export default function ManagePots() {
   };
 
   const filteredPots = pots.filter((pot) => {
+    const matchesPackaged = showPackaged ? pot.status_id === 2 : pot.status_id !== 2;
+
     const createdAt = new Date(pot.created_at).getTime();
     const startDate = filters.startDate ? new Date(filters.startDate).getTime() : null;
     const endDate = filters.endDate ? new Date(filters.endDate).getTime() : null;
@@ -178,16 +163,12 @@ export default function ManagePots() {
     const matchesDate =
       (!startDate || createdAt >= startDate) && (!endDate || createdAt <= endDate);
 
-    const potDateString = new Date(pot.created_at).toLocaleString().toLowerCase();
-
     const matchesSearch =
       pot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pot.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      pot.status.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      pot.groupName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      potDateString.includes(searchQuery.toLowerCase());
+      pot.groupName.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesDate && matchesSearch;
+    return matchesPackaged && matchesDate && matchesSearch;
   });
 
   const handleMassUpdate = async () => {
@@ -211,18 +192,17 @@ export default function ManagePots() {
     }
   };
 
-
-  // Clear filters function
-  const handleClearFilters = () => {
-    setFilters({ startDate: '', endDate: '' });
-    setSearchQuery('');
-  };
-
   return (
     <div className="w-screen min-h-screen flex flex-col items-center p-12 bg-burnt-orange">
       <h2 className="text-xl font-bold mb-4">Manage Pots</h2>
       <div className="mb-6 w-full max-w-4xl">
         <div className="flex gap-2 pb-4 items-end">
+          <button
+            onClick={handleTogglePackagedView}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            {showPackaged ? 'Show Unprocessed Pots' : 'Show Packaged Pots'}
+          </button>
           <div>
             <label htmlFor="startDate" className="block mb-1">Start Date</label>
             <input
@@ -245,7 +225,7 @@ export default function ManagePots() {
               className="border rounded px-2 w-40"
             />
           </div>
-          <div className="">
+          <div>
             <label htmlFor="searchQuery" className="block mb-1">Search</label>
             <input
               type="text"
@@ -256,22 +236,12 @@ export default function ManagePots() {
               className="w-48 border rounded px-2"
             />
           </div>
-          <div className=''>
-            <button
-              onClick={handleClearFilters} // Clear filters button
-              className="ml-auto px-2 py-2 bg-pale-yellow rounded hover:bg-hover-yellow"
-            >
-              Clear Filters
-            </button>
-          </div>
-          <div className='flex-1'>
-            <button
-              onClick={handleMassUpdate}
-              className="ml-auto px-2 py-2 bg-deep-green text-white rounded hover:bg-hover-green"
-            >
-              Mark Selected As Packaged
-            </button>
-          </div>
+          <button
+            onClick={handleClearFilters}
+            className="px-4 py-2 bg-gray-400 rounded hover:bg-gray-500"
+          >
+            Clear Filters
+          </button>
         </div>
       </div>
       <table className="table-auto w-full border-collapse border border-gray-500">
