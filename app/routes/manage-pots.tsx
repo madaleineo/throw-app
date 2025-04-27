@@ -1,6 +1,7 @@
 import { useLoaderData, json, Form } from '@remix-run/react';
 import { db } from '../utils/db.server';
 import React, { useState } from 'react';
+// import twilio from 'twilio';
 
 export async function loader() {
   const pots = await db.pot.findMany();
@@ -54,61 +55,54 @@ export async function action({ request }: { request: Request }) {
   }
 }
 
-async function checkAndTriggerGHL(potIds: number[]) {
-  const pots = await db.pot.findMany({
-    where: { id: { in: potIds } },
-    select: { group_id: true },
-  });
+// const accountSid = process.env.TEST_TWIL_ACCOUNT_SID;
+// const authToken = process.env.TEST_AUTH_TOKEN;
+// const client = twilio(accountSid, authToken);
 
-  const groupIds = [...new Set(pots.map((p) => p.group_id))];
 
-  for (const groupId of groupIds) {
-    const groupPots = await db.pot.findMany({
-      where: { group_id: groupId },
-    });
+// Glaze Defects/Broken Pieces!
+// Hello ____! We apologize for the delay in your pots being finished! We had a few kiln malfunctions which led to our glazes being extra runny and which caused glaze defects. We would love to make up for this unexpected outcome. We have many pottery pieces to choose from to take home in addition to your piece(s). If that isnt satisfactory we would love to have you come in again and make another piece to replace the one you made at no charge to you.           NOTE: Despite the defects of your piece(s) they are still food and water safe!
+// Throw Art Studio ❤️
 
-    const allPackaged = groupPots.every((p) => p.status_id === 2);
-    if (allPackaged) {
-      const group = await db.group.findUnique({ where: { id: groupId } });
-      if (group && group.phone) {
-        await sendGHLTextMessage(group.phone);
-      }
-    }
-  }
-}
+// client.messages
+//   .create({
+//     body: 'Hello from Twilio',
+//     from: '+18335321013',
+//     to: '+18777804236'
+//   })
+//   .then(message => console.log(message.sid));
 
-async function sendGHLTextMessage(phoneNumber: string) {
-  const locationId = process.env.GHL_LOCATION_ID;
-  const apiKey = process.env.GHL_API_KEY;
+// // eslint-disable-next-line consistent-return
+// exports.handler = function (context, event, callback) {
+//   const phoneNumbers = event.recipients.split(',').map((x) => x.trim());
+// const locationId = process.env.GHL_LOCATION_ID;
+// const apiKey = process.env.GHL_API_KEY;
 
-  const message =
-    'Hello there! Your pots from THROW Art Studios are now ready to be picked up! Please remember that you have 14 days to pick up your pots. If you do not pick them up within 14 days, we will sadly have to destroy them. Please click this link to schedule a time to pick up your pots. https://fareharbor.com/embeds/book/luv-jp/items/562991/calendar/2024/12/?flow=1022190&full-items=yes';
+//   const client = context.getTwilioClient();
+//   const allMessageRequests = phoneNumbers.map((to) => {
+//     return client.messages
+//       .create({
+//         from: context.TWILIO_PHONE_NUMBER,
+//         to,
+//         body: 'Hello there! Your pots from THROW Art Studios are now ready to be picked up! Please remember that you have 14 days to pick up your pots. If you do not pick them up within 14 days, we will sadly have to destroy them. Please click this link to schedule a time to pick up your pots. https://fareharbor.com/embeds/book/luv-jp/items/562991/calendar/2024/12/?flow=1022190&full-items=yes',
+//       })
+//       .then((msg) => {
+//         return { success: true, sid: msg.sid };
+//       })
+//       .catch((err) => {
+//         return { success: false, error: err.message };
+//       });
+//   });
 
-  const response = await fetch('https://services.leadconnectorhq.com/conversations/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-      Version: '2021-04-15',
-    },
-    body: JSON.stringify({
-      type: 'SMS',
-      contactId: '',
-      locationId,
-      fromNumber: '+13854752856',
-      toNumber: `+1${phoneNumber}`,
-      messageType: 'OUTBOUND',
-      message: message,
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('[GHL] Failed to send SMS:', response.status, response.statusText, errorText);
-  } else {
-    console.log('[GHL] SMS successfully sent to:', phoneNumber);
-  }
-}
+//   Promise.all(allMessageRequests)
+//     .then((result) => {
+//       return callback(null, { result });
+//     })
+//     .catch((err) => {
+//       console.error(err);
+//       return callback('Failed to fetch messages');
+//     });
+// };
 
 export default function ManagePots() {
   const data = useLoaderData<typeof loader>();

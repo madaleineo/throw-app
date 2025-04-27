@@ -6,7 +6,8 @@ export default {
       colors: {
         'burnt-orange': '#DDC3AA',
         'pale-yellow': '#FAF6EA',
-        'deep-green': '#868866',
+        'deep-green': '#717955',
+        // 'deep-green': '#868866',
         'hover-orange': '#ebdbcc',
         'hover-yellow': '#f5edd5',
         'hover-green': '#92956f',
